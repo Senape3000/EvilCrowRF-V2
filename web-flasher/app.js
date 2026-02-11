@@ -98,16 +98,9 @@ async function fetchReleases() {
     termLog(`  ✓ ${fwReleases.length} firmware release(s) with full binary`, 'info');
     termLog(`  ✓ ${appReleases.length} app release(s) with APK`, 'info');
 
-    if (fwReleases.length === 0) {
-      // Fallback: check for OTA .bin (some releases may only have OTA)
-      const otaReleases = allReleases.filter(r =>
-        r.assets.some(a => /evilcrow-v2-fw-.*\.bin$/i.test(a.name) && !/\.md5$/i.test(a.name))
-      );
-      if (otaReleases.length > 0) {
-        termLog('  ⚠ No -full.bin found, showing OTA binaries instead', 'warn');
-        fwReleases = otaReleases;
-      }
-    }
+    // NOTE: We intentionally do NOT fallback to OTA binaries here.
+    // If there are no releases with a "-full.bin" asset we want
+    // to show a single explicit state: NO FIRMWARE
 
     populateVersionSelect();
     populateApkButton();
@@ -126,9 +119,18 @@ function populateVersionSelect() {
 
   if (fwReleases.length === 0) {
     const opt = document.createElement('option');
-    opt.textContent = 'No firmware releases found';
+    opt.textContent = 'NO FIRMWARE';
     opt.disabled = true;
     versionSelect.appendChild(opt);
+    // Disable install button and clear manifest
+    try {
+      if (espInstallBtn) {
+        espInstallBtn.setAttribute('disabled', '');
+        espInstallBtn.removeAttribute && espInstallBtn.removeAttribute('manifest');
+      }
+    } catch (e) { /* ignore */ }
+    setStatus('error', 'NO FIRMWARE');
+    termLog('  ✗ No full firmware binaries available (NO FIRMWARE)', 'error');
     return;
   }
 
@@ -152,9 +154,8 @@ function onVersionChange() {
   selectedFw = fwReleases[idx];
   if (!selectedFw) return;
 
-  // Find the full.bin asset (or fallback to any .bin)
-  const fullAsset = selectedFw.assets.find(a => FW_FULL_RE.test(a.name))
-    || selectedFw.assets.find(a => /evilcrow-v2-fw-.*\.bin$/i.test(a.name) && !/\.md5$/i.test(a.name));
+  // Find the full.bin asset (strict: do NOT fallback to OTA)
+  const fullAsset = selectedFw.assets.find(a => FW_FULL_RE.test(a.name));
 
   // Update info
   if (fwInfoTag)  fwInfoTag.textContent  = selectedFw.tag_name || selectedFw.name;
@@ -165,8 +166,19 @@ function onVersionChange() {
 
   // Build dynamic manifest for ESP Web Tools
   if (fullAsset) {
+    try { espInstallBtn && espInstallBtn.removeAttribute && espInstallBtn.removeAttribute('disabled'); } catch (e) {}
     buildManifest(fullAsset);
     termLog(`  Selected: ${fullAsset.name} (${formatBytes(fullAsset.size)})`, 'info');
+    setStatus('online', 'Ready to flash');
+  } else {
+    // This should not normally happen because we filter releases by full.bin,
+    // but handle it defensively: show NO FIRMWARE and disable install.
+    try {
+      if (espInstallBtn) espInstallBtn.setAttribute('disabled', '');
+      espInstallBtn && espInstallBtn.removeAttribute && espInstallBtn.removeAttribute('manifest');
+    } catch (e) { /* ignore */ }
+    termLog('  ✗ Selected release has no -full.bin asset — NO FIRMWARE', 'error');
+    setStatus('error', 'NO FIRMWARE');
   }
 
   // Update changelog
