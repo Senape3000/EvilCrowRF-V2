@@ -48,7 +48,7 @@ EvilCrow RF V2 is an open-source project providing firmware, tools and a mobile 
 
 - Flutter mobile app: BLE controller, quick actions, OTA checks
 
-- SDR-like tools and Python utilities (spectrum scan, raw RX, URH bridge)
+- [SDR-like tools and Python utilities (spectrum scan, raw RX, URH bridge)](https://github.com/Senape3000/EvilCrowRF-V2/tree/main/SDR)
 
 - Battery monitoring and status notifications via BLE
 
