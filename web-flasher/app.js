@@ -149,7 +149,7 @@ function populateVersionSelect() {
 }
 
 // ─── Handle version change ─────────────────────────────────────────
-function onVersionChange() {
+async function onVersionChange() {
   const idx = parseInt(versionSelect.value, 10);
   selectedFw = fwReleases[idx];
   if (!selectedFw) return;
@@ -167,9 +167,8 @@ function onVersionChange() {
   // Build dynamic manifest for ESP Web Tools
   if (fullAsset) {
     try { espInstallBtn && espInstallBtn.removeAttribute && espInstallBtn.removeAttribute('disabled'); } catch (e) {}
-    buildManifest(fullAsset);
     termLog(`  Selected: ${fullAsset.name} (${formatBytes(fullAsset.size)})`, 'info');
-    setStatus('online', 'Ready to flash');
+    await buildManifest(fullAsset);
   } else {
     // This should not normally happen because we filter releases by full.bin,
     // but handle it defensively: show NO FIRMWARE and disable install.
@@ -188,31 +187,81 @@ function onVersionChange() {
 versionSelect.addEventListener('change', onVersionChange);
 
 // ─── Build ESP Web Tools manifest dynamically ──────────────────────
-function buildManifest(asset) {
-  const manifest = {
-    name: 'EvilCrow RF V2',
-    version: selectedFw.tag_name || selectedFw.name || 'unknown',
-    funding_url: DONATE_URL,
-    new_install_prompt_erase: true,
-    builds: [
-      {
-        chipFamily: 'ESP32',
-        improv: false,
-        parts: [
-          { path: asset.browser_download_url, offset: 0 }
-        ]
-      }
-    ]
-  };
+// GitHub release download URLs (browser_download_url) don't support CORS.
+// We download the firmware binary via the GitHub API (which has CORS headers),
+// create a local Blob URL, and feed that to ESP Web Tools.
+async function buildManifest(asset) {
+  termLog(`  ↓ Downloading firmware via GitHub API...`, 'info');
+  setStatus('loading', 'Downloading firmware...');
 
-  const json = JSON.stringify(manifest);
-  const blob = new Blob([json], { type: 'application/json' });
-  const url  = URL.createObjectURL(blob);
+  try {
+    // Use the GitHub API asset endpoint with octet-stream accept header.
+    // This redirects to a *.githubusercontent.com URL that has CORS headers.
+    const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/releases/assets/${asset.id}`;
+    const resp = await fetch(apiUrl, {
+      headers: { 'Accept': 'application/octet-stream' }
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status} downloading firmware`);
 
-  // Set manifest on the esp-web-install-button element
-  espInstallBtn.setAttribute('manifest', url);
-  // Also set it directly in case the element reads the property
-  espInstallBtn.manifest = url;
+    const fwBlob = await resp.blob();
+    const fwBlobUrl = URL.createObjectURL(fwBlob);
+
+    termLog(`  ✓ Firmware downloaded (${formatBytes(fwBlob.size)})`, 'success');
+
+    const manifest = {
+      name: 'EvilCrow RF V2',
+      version: selectedFw.tag_name || selectedFw.name || 'unknown',
+      funding_url: DONATE_URL,
+      new_install_prompt_erase: true,
+      builds: [
+        {
+          chipFamily: 'ESP32',
+          improv: false,
+          parts: [
+            { path: fwBlobUrl, offset: 0 }
+          ]
+        }
+      ]
+    };
+
+    const json = JSON.stringify(manifest);
+    const manifestBlob = new Blob([json], { type: 'application/json' });
+    const manifestUrl  = URL.createObjectURL(manifestBlob);
+
+    // Set manifest on the esp-web-install-button element
+    espInstallBtn.setAttribute('manifest', manifestUrl);
+    // Also set it directly in case the element reads the property
+    espInstallBtn.manifest = manifestUrl;
+
+    setStatus('online', 'Ready to flash');
+  } catch (err) {
+    termLog(`  ✗ Firmware download failed: ${err.message}`, 'error');
+    termLog(`  Tip: Falling back to direct URL (may fail due to CORS)`, 'warn');
+    setStatus('error', 'Download failed — trying direct URL');
+
+    // Fallback: use browser_download_url directly (original behavior)
+    const manifest = {
+      name: 'EvilCrow RF V2',
+      version: selectedFw.tag_name || selectedFw.name || 'unknown',
+      funding_url: DONATE_URL,
+      new_install_prompt_erase: true,
+      builds: [
+        {
+          chipFamily: 'ESP32',
+          improv: false,
+          parts: [
+            { path: asset.browser_download_url, offset: 0 }
+          ]
+        }
+      ]
+    };
+
+    const json = JSON.stringify(manifest);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    espInstallBtn.setAttribute('manifest', url);
+    espInstallBtn.manifest = url;
+  }
 }
 
 // ─── APK download button ──────────────────────────────────────────
@@ -251,24 +300,30 @@ async function renderChangelog() {
   // Try to fetch changelog.json from the selected release assets
   let changelogData = null;
 
-  // First try: from the selected release's assets
+  // First try: from the selected release's assets (via GitHub API to avoid CORS)
   if (selectedFw) {
     const clAsset = selectedFw.assets.find(a => a.name === 'changelog.json');
     if (clAsset) {
       try {
-        const resp = await fetch(clAsset.browser_download_url);
+        const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/releases/assets/${clAsset.id}`;
+        const resp = await fetch(apiUrl, {
+          headers: { 'Accept': 'application/octet-stream' }
+        });
         if (resp.ok) changelogData = await resp.json();
       } catch (_) { /* ignore */ }
     }
   }
 
-  // Fallback: from the latest release
+  // Fallback: from the latest release (via GitHub API to avoid CORS)
   if (!changelogData && allReleases.length > 0) {
     for (const rel of allReleases) {
       const clAsset = rel.assets.find(a => a.name === 'changelog.json');
       if (clAsset) {
         try {
-          const resp = await fetch(clAsset.browser_download_url);
+          const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/releases/assets/${clAsset.id}`;
+          const resp = await fetch(apiUrl, {
+            headers: { 'Accept': 'application/octet-stream' }
+          });
           if (resp.ok) {
             changelogData = await resp.json();
             break;
