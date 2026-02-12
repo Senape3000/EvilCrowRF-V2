@@ -1,6 +1,5 @@
-# ---
 
-**Evil Crow RF V2: Hardware Analysis & Pinout Report**
+# **Evil Crow RF V2: Hardware Analysis & Pinout Report**
 
 *(based on: Schematic\_EvilCrow\_RF\_V4\_2021-12-14.pdf)*
 
