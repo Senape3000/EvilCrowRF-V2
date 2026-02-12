@@ -1,0 +1,11 @@
+.pio
+.vscode
+.venv
+.pio_core
+.idea
+.cursor
+.github
+logs/
+releases/
+personal_docs/
+*.7z
