@@ -1,0 +1,1286 @@
+{
+  "@@locale": "en",
+  "appTitle": "Tut RF",
+  "@appTitle": {
+    "description": "Application title"
+  },
+  
+  "home": "Home",
+  "brute": "Brute",
+  "record": "Record",
+  "files": "Files",
+  "settings": "Settings",
+  
+  "connectionRequired": "Connection Required",
+  "@connectionRequired": {
+    "description": "Dialog title when connection is required"
+  },
+  "connectionRequiredMessage": "Please connect to a device first to access this feature.",
+  "@connectionRequiredMessage": {
+    "description": "Dialog message when connection is required"
+  },
+  "ok": "OK",
+  
+  "permissionError": "Permission Error",
+  "@permissionError": {
+    "description": "Permission error title"
+  },
+  
+  "disconnected": "Disconnected",
+  "connected": "Connected to {deviceName}",
+  "@connected": {
+    "description": "Connection status message",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "connecting": "Connecting...",
+  "connectingToKnownDevice": "Connecting to known device...",
+  "scanningForDevice": "Scanning for device...",
+  "deviceNotFound": "Device not found. Make sure it's powered on and nearby.",
+  "connectionError": "Connection error: {error}",
+  "@connectionError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "bluetoothEnabled": "Bluetooth enabled",
+  "bluetoothDisabled": "Bluetooth disabled",
+  "somePermissionsDenied": "Some permissions denied. Bluetooth may not work properly.",
+  "allPermissionsGranted": "All permissions granted. Bluetooth ready.",
+  "bluetoothScanPermissionsNotGranted": "Bluetooth scan permissions not granted",
+  "scanningForDevices": "Scanning for devices...",
+  "foundSupportedDevices": "Found {count} supported device(s). Tap to connect.",
+  "@foundSupportedDevices": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noSupportedDevicesFound": "No supported devices found. Make sure ESP32 is powered on and nearby.",
+  "scanError": "Scan error: {error}",
+  "@scanError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "scanStopped": "Scan stopped",
+  "stopScanError": "Stop scan error: {error}",
+  "@stopScanError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "requiredCharacteristicsNotFound": "Required characteristics not found",
+  "requiredServiceNotFound": "Required service not found",
+  "knownDeviceCleared": "Known device cleared. Next connection will scan for devices.",
+  "notConnected": "Not connected",
+  "sendError": "Send error: {error}",
+  "@sendError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "commandTimeout": "Command timeout - please try again",
+  "fileListLoadingTimeout": "File list loading timeout - please try again",
+  "transmittingSignal": "Transmitting signal...",
+  "transmissionFailed": "Transmission failed: {error}",
+  "@transmissionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "disconnect": "Disconnect",
+  "connect": "Connect",
+  "scanForNewDevices": "Scan for New Devices",
+  "scanForDevices": "Scan for Devices",
+  "scanAgain": "Scan Again",
+  "foundSupportedDevicesCount": "Found {count} supported device(s):",
+  "@foundSupportedDevicesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unknownDevice": "Unknown Device",
+  
+  "notConnectedToDevice": "Not connected to device",
+  "connectToDeviceToManageFiles": "Connect to a device to manage files",
+  "refresh": "Refresh",
+  "stopLoading": "Stop Loading",
+  "createDirectory": "Create Directory",
+  "uploadFile": "Upload File",
+  "exitMultiSelect": "Exit Multi-Select",
+  "multiSelect": "Multi-Select",
+  "directoryName": "Directory name",
+  "enterDirectoryName": "Enter directory name",
+  "create": "Create",
+  "cancel": "Cancel",
+  
+  "copyFile": "Copy File",
+  "newFileName": "New file name",
+  "destination": "Destination: {path}",
+  "@destination": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "copy": "Copy",
+  
+  "renameDirectory": "Rename Directory",
+  "renameFile": "Rename File",
+  "newDirectoryName": "New directory name",
+  "rename": "Rename",
+  
+  "deleteDirectory": "Delete Directory",
+  "deleteFile": "Delete File",
+  "deleteConfirm": "Are you sure you want to delete \"{name}\"?",
+  "@deleteConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "delete": "Delete",
+  "deleteFiles": "Delete Files",
+  "deleteFilesConfirm": "Are you sure you want to delete {count} files?",
+  "@deleteFilesConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectedCount": "{count} selected",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "clearSelection": "Clear Selection",
+  "deleteSelected": "Delete Selected",
+  
+  "moveDirectory": "Move Directory",
+  "moveFile": "Move File",
+  "move": "Move",
+  
+  "records": "Records",
+  "signals": "Signals",
+  "captured": "Captured",
+  "presets": "Presets",
+  "temp": "Temp",
+  
+  "saveFileAs": "Save file as...",
+  "fileSaved": "File saved to: {path}",
+  "@fileSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "fileContentCopiedToClipboard": "File content copied to clipboard",
+  "fileSavedToDocuments": "File saved to Documents: {path}",
+  "@fileSavedToDocuments": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotSaveFile": "Could not save file. Content copied to clipboard. Error: {error}",
+  "@couldNotSaveFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailed": "Download failed: {error}",
+  "@downloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailedNoContent": "Download failed: No content received",
+  "fileCopied": "File copied: {name}",
+  "@fileCopied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "copyFailed": "Copy failed: {error}",
+  "@copyFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "directoryRenamed": "Directory renamed to: {name}",
+  "@directoryRenamed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "fileRenamed": "File renamed to: {name}",
+  "@fileRenamed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "renameFailed": "Rename failed: {error}",
+  "@renameFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "directoryDeleted": "Directory deleted: {name}",
+  "@directoryDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "fileDeleted": "File deleted: {name}",
+  "@fileDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteFailed": "Delete failed: {error}",
+  "@deleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deletedFilesCount": "Deleted {count} files{extra}",
+  "@deletedFilesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
+  "failed": "failed",
+  "directoryMoved": "Directory moved: {name}",
+  "@directoryMoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "fileMoved": "File moved: {name}",
+  "@fileMoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moveFailed": "Move failed: {error}",
+  "@moveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "directoryCreated": "Directory created: {name}",
+  "@directoryCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateDirectory": "Failed to create directory: {error}",
+  "@failedToCreateDirectory": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "uploadingFile": "Uploading {fileName}...",
+  "@uploadingFile": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "fileUploaded": "File uploaded: {fileName}",
+  "@fileUploaded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "uploadFailed": "Upload failed: {error}",
+  "@uploadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectedFileDoesNotExist": "Selected file does not exist",
+  "uploadError": "Upload Error",
+  "failedToPickFile": "Failed to pick file: {error}",
+  "@failedToPickFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "noLogsYet": "No logs yet",
+  "commandsAndResponsesWillAppearHere": "Commands and responses will appear here",
+  "logsCount": "Logs ({count})",
+  "@logsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "clearAllLogs": "Clear all logs",
+  
+  "loadingFilePreview": "Loading file preview...",
+  "previewError": "Preview Error",
+  "retry": "Retry",
+  "chars": "{count} chars",
+  "@chars": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "previewTruncated": "Preview truncated. Open file to see full content.",
+  
+  "clearFileCache": "Clear File Cache",
+  "rebootDevice": "Reboot Device",
+  "requestPermissions": "Request Permissions",
+  
+  "sendCommand": "Send Command",
+  "enterCommand": "Enter Command",
+  "commandHint": "e.g., SCAN, RECORD, PLAY",
+  "send": "Send",
+  
+  "scanner": "Scanner",
+  "clearList": "Clear list",
+  "stop": "Stop",
+  "start": "Start",
+  
+  "language": "Language",
+  "selectLanguage": "Select Language",
+  "english": "English",
+  "russian": "Russian",
+  "systemDefault": "System Default",
+  
+  "deviceStatus": "Device Status",
+  "subGhzModule": "Sub-GHz Module {number}",
+  "@subGhzModule": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "connectedToDevice": "Connected: {deviceName}",
+  "@connectedToDevice": {
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "notConnected": "Not connected",
+  "sdCardReady": "SD Card ready",
+  "freeHeap": "Free Heap: {kb} KB",
+  "@freeHeap": {
+    "placeholders": {
+      "kb": {
+        "type": "String"
+      }
+    }
+  },
+  "notifications": "Notifications",
+  "noNotifications": "No notifications",
+  "clearAll": "Clear All",
+  "justNow": "Just now",
+  "minutesAgo": "m ago",
+  "hoursAgo": "h ago",
+  "daysAgo": "d ago",
+  "frequency": "Frequency",
+  "modulation": "Modulation",
+  "dataRate": "Data Rate",
+  "bandwidth": "Bandwidth",
+  "deviation": "Deviation",
+  "rxBandwidth": "RX Bandwidth",
+  "protocol": "Protocol",
+  "preset": "Preset",
+  "signalName": "Signal Name",
+  "settingsParseError": "Settings Parse Error",
+  "unknown": "Unknown",
+  "idle": "Idle",
+  "detecting": "Detecting",
+  "recording": "Recording",
+  "jamming": "Jamming",
+  "jammingSettings": "Jamming Settings",
+  "transmitting": "Transmitting",
+  "scanning": "Scanning",
+  
+  "statusIdle": "Idle",
+  "statusRecording": "Recording",
+  "statusScanning": "Scanning",
+  "statusTransmitting": "Transmitting",
+  
+  "kbps": "kbps",
+  "hz": "Hz",
+  
+  "modulationAskOok": "ASK/OOK",
+  "modulation2Fsk": "2-FSK",
+  "modulation4Fsk": "4-FSK",
+  "modulationGfsk": "GFSK",
+  "modulationMsk": "MSK",
+  
+  "startRecordingToCaptureSignals": "Start recording to capture signals",
+  "frequencySearchStoppedForModule": "Frequency search stopped for Module {number}",
+  "@frequencySearchStoppedForModule": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "error": "Error",
+  "deviceNotConnected": "Device not connected",
+  "moduleBusy": "Module Busy",
+  "moduleBusyMessage": "Module {number} is currently in \"{mode}\" mode.\\nWait for the current operation to complete or switch the module to Idle mode.",
+  "@moduleBusyMessage": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "validationError": "Validation Error",
+  "recordingStarted": "Recording started on module {number}",
+  "@recordingStarted": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "recordingError": "Recording Error",
+  "recordingStartFailed": "Failed to start recording: {error}",
+  "@recordingStartFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recordingStopped": "Recording stopped on module {number}",
+  "@recordingStopped": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "recordingStopFailed": "Failed to stop recording: {error}",
+  "@recordingStopFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "module": "Module {number}",
+  "@module": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "startRecording": "Start Recording",
+  "stopRecording": "Stop Recording",
+  "moduleBusy": "Module Busy",
+  "advanced": "Advanced",
+  "startJamming": "Start Jamming",
+  "stopJamming": "Stop Jamming",
+  "jammingStarted": "Jamming started on Module {module}",
+  "@jammingStarted": {
+    "placeholders": {
+      "module": {
+        "type": "int"
+      }
+    }
+  },
+  "jammingStopped": "Jamming stopped on Module {module}",
+  "@jammingStopped": {
+    "placeholders": {
+      "module": {
+        "type": "int"
+      }
+    }
+  },
+  "jammingError": "Jamming Error",
+  "jammingStartFailed": "Failed to start jamming: {error}",
+  "@jammingStartFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "jammingStopFailed": "Failed to stop jamming: {error}",
+  "@jammingStopFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "stopFrequencySearch": "Stop frequency search",
+  "searchForFrequency": "Search for frequency",
+  "signalsCaptured": "Module {number} Signals Captured ({count})",
+  "@signalsRecorded": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recordedFiles": "Recorded Files",
+  "saveSignal": "Save Signal",
+  "enterSignalName": "Enter a name for the signal:",
+  "deleteSignal": "Delete Signal",
+  "deleteSignalConfirm": "Are you sure you want to delete \"{filename}\"?\\n\\nThis action cannot be undone.",
+  "@deleteSignalConfirm": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "recordScreenHelp": "Record Screen Help",
+  
+  "fileDownloadedSuccessfully": "File \"{fileName}\" downloaded successfully",
+  "@fileDownloadedSuccessfully": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "imagePreviewNotSupported": "Image preview not supported yet",
+  "viewAsText": "View as Text",
+  "failedToParseFile": "Failed to parse file",
+  "signalParameters": "Signal Parameters",
+  "signalData": "Signal Data",
+  "samplesCount": "Samples Count",
+  "rawData": "Raw Data:",
+  "binaryData": "Binary Data:",
+  "warnings": "Warnings",
+  "noContentAvailable": "No content available",
+  "copyToClipboard": "Copy to Clipboard",
+  "downloadFile": "Download File",
+  "transmitSignal": "Transmit Signal",
+  "reload": "Reload",
+  "parsed": "Parsed",
+  "raw": "Raw",
+  "loadingFile": "Loading file...",
+  "notConnectedToDeviceFile": "Not connected to device",
+  "connectToDeviceToViewFiles": "Connect to a device to view files",
+  
+  "transmitSignal": "Transmit Signal",
+  "transmitSignalConfirm": "This will transmit the signal from this file.",
+  "file": "File",
+  "transmitWarning": "Only use in controlled environments. Check local regulations.",
+  "dontShowAgain": "Don't show this again",
+  "resetTransmitConfirmation": "Reset Transmit Confirmation",
+  "transmitConfirmationReset": "Transmit confirmation dialog has been reset.",
+  "transmit": "Transmit",
+  "signalTransmissionStarted": "Signal transmission started: {fileName}",
+  "@signalTransmissionStarted": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "transmissionError": "Transmission error: {error}",
+  "@transmissionError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "view": "View",
+  "save": "Save",
+  "send": "Send",
+  "loadingFiles": "Loading files...",
+  "noRecordedFiles": "No recorded files",
+  "noFilesFound": "No files found",
+  
+  "recordSettings": "Record Settings",
+  "mhz": "MHz",
+  "khz": "kHz",
+  "kbaud": "kBaud",
+  "bandwidth": "Bandwidth",
+  
+  "signalSavedAs": "Signal saved as: {fileName}",
+  "@signalSavedAs": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "transmittingFile": "Transmitting file: {fileName}",
+  "@transmittingFile": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "recordingShort": "Recording",
+  "freqShort": "Freq",
+  "modShort": "Mod",
+  "rateShort": "Rate",
+  "bwShort": "BW",
+  
+  "clearDeviceCache": "Clear Device Cache",
+  "clearDeviceCacheDescription": "Remove saved device information",
+  
+  "filesLoadedCount": "Files loaded: {loaded} of {total}",
+  "@filesLoadedCount": {
+    "placeholders": {
+      "loaded": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "filesInDirectory": "Files in directory: {count}",
+  "@filesInDirectory": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noFiles": "No files",
+  "loadingFiles": "Loading...",
+
+  "searchProtocols": "Search protocols...",
+  "attackMode": "Attack Mode:",
+  "standardMode": "Standard",
+  "deBruijnMode": "DeBruijn",
+  "noProtocolsFound": "No protocols found",
+  "pausedProtocol": "Paused: {name}",
+  "@pausedProtocol": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "bruteForceRunning": "Brute Force Running: {name}",
+  "@bruteForceRunning": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "bruteResume": "RESUME",
+  "brutePause": "PAUSE",
+  "bruteStop": "STOP",
+  "resumeInfo": "Resume will re-transmit 5 codes before the pause point.",
+  "startBruteForce": "Start Brute Force",
+  "startBruteForceSuffix": "Start Brute Force{suffix}",
+  "@startBruteForceSuffix": {
+    "placeholders": {
+      "suffix": { "type": "String" }
+    }
+  },
+  "keySpace": "Key Space",
+  "delay": "Delay",
+  "estTime": "Est. Time",
+  "largeKeyspaceWarning": "{bits}-bit keyspace is very large. Full scan may take {time}.",
+  "@largeKeyspaceWarning": {
+    "placeholders": {
+      "bits": { "type": "int" },
+      "time": { "type": "String" }
+    }
+  },
+  "deviceWillTransmit": "The device will start transmitting. You can stop at any time.",
+  "bruteForceStarted": "Brute force started: {name}",
+  "@bruteForceStarted": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "failedToStart": "Failed to start: {error}",
+  "@failedToStart": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "bruteForcePausing": "Brute force pausing...",
+  "failedToPause": "Failed to pause: {error}",
+  "@failedToPause": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "bruteForceResumed": "Brute force resumed",
+  "failedToResume": "Failed to resume: {error}",
+  "@failedToResume": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "savedStateDiscarded": "Saved bruter state discarded",
+  "failedToDiscard": "Failed to discard state: {error}",
+  "@failedToDiscard": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "bruteForceStopped": "Brute force stopped",
+  "failedToStop": "Failed to stop: {error}",
+  "@failedToStop": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "bruteForceCompleted": "Brute force completed: {name}",
+  "@bruteForceCompleted": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "bruteForceCancelled": "Brute force cancelled: {name}",
+  "@bruteForceCancelled": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "bruteForceErrorMsg": "Brute force error: {name}",
+  "@bruteForceErrorMsg": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "deBruijnCompatible": "DeBruijn ✓",
+  "deBruijnTooltip": "DeBruijn sequences cover all n-bit combinations in one continuous bitstream — ~90x faster",
+  "deBruijnFaster": "DeBruijn (~90x faster)",
+  "modeLabel": "Mode",
+
+  "moduleLabel": "Module:",
+  "cc1101Module1": "CC1101-1",
+  "cc1101Module2": "CC1101-2",
+  "rssiLabel": "RSSI:",
+  "scanningActive": "Scanning active",
+  "scanningStopped": "Scanning stopped",
+  "signalList": "Signal List",
+  "spectrogramView": "Spectrogram",
+  "searchingForSignals": "Searching for signals...",
+  "pressStartToScan": "Press Start to begin scanning",
+  "signalSpectrogram": "Signal Spectrogram",
+  "signalStrengthStrong": "Strong",
+  "signalStrengthMedium": "Medium",
+  "signalStrengthWeak": "Weak",
+  "signalStrengthNone": "None",
+  "errorStartingScan": "Error starting scan: {error}",
+  "@errorStartingScan": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "errorStoppingScan": "Error stopping scan: {error}",
+  "@errorStoppingScan": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+
+  "transmitSettings": "Transmit Settings",
+  "advancedMode": "Advanced Mode",
+  "manualConfiguration": "Manual configuration",
+  "usePresets": "Use presets",
+  "transmitData": "Transmit Data",
+  "rawDataLabel": "Raw Data",
+  "rawDataHint": "Enter raw signal data (e.g., 100 200 300 400)",
+  "repeatCount": "Repeat Count",
+  "repeatCountHint": "1-100",
+  "loadFile": "Load File",
+  "transmitScreenHelp": "Transmit Screen Help",
+  "transmitScreenHelpContent": "This screen allows you to transmit RF signals using the CC1101 modules.\n\n• Select a module tab to configure its settings\n• Choose between Simple and Advanced modes\n• Simple mode uses presets for quick setup\n• Advanced mode allows fine-tuning of parameters\n• Enter raw signal data in the text field\n• Set the number of repetitions (1-100)\n• Use \"Load File\" to load signal data from a file\n• Click \"Transmit Signal\" to start transmission\n\nMake sure your device is connected before transmitting.",
+  "statusLabelWithMode": "Status: {mode}",
+  "@statusLabelWithMode": {
+    "placeholders": {
+      "mode": { "type": "String" }
+    }
+  },
+  "connectionConnected": "Connected",
+  "connectionDisconnected": "Disconnected",
+  "connectionLabelWithStatus": "Connection: {status}",
+  "@connectionLabelWithStatus": {
+    "placeholders": {
+      "status": { "type": "String" }
+    }
+  },
+  "transmissionStartedOnModule": "Transmission started on Module #{number}",
+  "@transmissionStartedOnModule": {
+    "placeholders": {
+      "number": { "type": "int" }
+    }
+  },
+  "failedToStartTransmission": "Failed to start transmission: {error}",
+  "@failedToStartTransmission": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "featureInDevelopment": "Feature in development",
+  "fileSelectionLater": "File selection will be implemented later",
+  "moduleBusyTransmitMessage": "Module {number} is currently in mode \"{mode}\".\nWait for the current operation to finish or switch the module to Idle mode.",
+  "@moduleBusyTransmitMessage": {
+    "placeholders": {
+      "number": { "type": "int" },
+      "mode": { "type": "String" }
+    }
+  },
+  "invalidFrequencyClosest": "Invalid frequency {freq} MHz. Closest valid: {closest} MHz",
+  "@invalidFrequencyClosest": {
+    "placeholders": {
+      "freq": { "type": "String" },
+      "closest": { "type": "String" }
+    }
+  },
+  "invalidFrequencySimple": "Invalid frequency {freq} MHz",
+  "@invalidFrequencySimple": {
+    "placeholders": {
+      "freq": { "type": "String" }
+    }
+  },
+  "invalidModuleNumber": "Invalid module number: {number}",
+  "@invalidModuleNumber": {
+    "placeholders": {
+      "number": { "type": "int" }
+    }
+  },
+  "rawDataRequired": "Raw data is required for transmission",
+  "repeatCountRange": "Repeat count must be between 1 and 100",
+  "invalidDataRateValue": "Invalid data rate {rate} kBaud",
+  "@invalidDataRateValue": {
+    "placeholders": {
+      "rate": { "type": "String" }
+    }
+  },
+  "invalidDeviationValue": "Invalid deviation {value} kHz",
+  "@invalidDeviationValue": {
+    "placeholders": {
+      "value": { "type": "String" }
+    }
+  },
+  "transmissionErrorLabel": "Transmission error",
+  "allCategory": "All",
+
+  "nrfModule": "nRF24L01 Module",
+  "nrfSubtitle": "MouseJack / Spectrum / Jammer",
+  "nrfInitialize": "Initialize NRF24",
+  "nrfNotDetected": "nRF24L01 module not detected",
+  "connectToDeviceFirst": "Connect to device first",
+
+  "mouseJack": "MouseJack",
+  "spectrum": "Spectrum",
+  "jammer": "Jammer",
+
+  "scan": "Scan",
+  "startScan": "Start Scan",
+  "stopScan": "Stop Scan",
+  "refreshTargets": "Refresh targets",
+  "targetsCount": "Targets ({count})",
+  "@targetsCount": { "placeholders": { "count": { "type": "int" } } },
+  "noDevicesFoundYet": "No devices found yet",
+
+  "attack": "Attack",
+  "injectText": "Inject Text",
+  "textToInject": "Text to inject...",
+  "send": "Send",
+  "duckyScript": "DuckyScript",
+  "duckyPathHint": "/DATA/DUCKY/payload.txt",
+  "run": "Run",
+  "stopAttack": "Stop Attack",
+
+  "startAnalyzer": "Start Analyzer",
+  "stop": "Stop",
+  "channelLabel": "CH {ch}",
+  "@channelLabel": { "placeholders": { "ch": { "type": "int" } } },
+
+  "jammerDisclaimer": "For educational use only. Jamming may be illegal in your jurisdiction.",
+  "mode": "Mode",
+  "fullSpectrum": "Full Spectrum",
+  "fullSpectrumDesc": "1-124 channels",
+  "wifiMode": "WiFi",
+  "wifiModeDesc": "2.4 GHz WiFi channels",
+  "bleMode": "BLE",
+  "bleModeDesc": "BLE data channels",
+  "bleAdvertising": "BLE Advertising",
+  "bleAdvertisingDesc": "BLE advert channels",
+  "bluetooth": "Bluetooth",
+  "bluetoothDesc": "Classic BT channels",
+  "usbWireless": "USB Wireless",
+  "usbWirelessDesc": "USB wireless channels",
+  "videoStreaming": "Video Streaming",
+  "videoStreamingDesc": "Video channels",
+  "rcControllers": "RC Controllers",
+  "rcControllersDesc": "RC channels",
+  "singleChannel": "Single Channel",
+  "singleChannelDesc": "One specific channel",
+  "customHopper": "Custom Hopper",
+  "customHopperDesc": "Custom range + step",
+  "channel": "Channel",
+  "channelFreq": "Channel: {ch} ({freq} MHz)",
+  "@channelFreq": { "placeholders": { "ch": { "type": "int" }, "freq": { "type": "int" } } },
+  "hopperConfig": "Hopper Config",
+  "start": "Start",
+  "stopLabel": "Stop",
+  "step": "Step",
+  "startJammer": "Start Jammer",
+  "stopJammer": "Stop Jammer",
+
+  "deviceInfo": "Device Info",
+  "currentFirmware": "Current Firmware",
+  "freeHeap": "Free Heap",
+  "freeHeapBytes": "{bytes} bytes",
+  "@freeHeapBytes": { "placeholders": { "bytes": { "type": "int" } } },
+  "connection": "Connection",
+  "firmwareUpdate": "Firmware Update",
+  "latestVersion": "Latest Version",
+  "updateAvailable": "Update Available",
+  "upToDate": "No (up to date)",
+  "yes": "Yes",
+  "checkForUpdates": "Check for Updates",
+  "checking": "Checking...",
+  "download": "Download",
+  "downloading": "Downloading firmware...",
+  "downloadComplete": "Download complete ({bytes} bytes)",
+  "@downloadComplete": { "placeholders": { "bytes": { "type": "int" } } },
+  "noNewVersion": "No new version available.",
+  "apiError": "API Error",
+  "otaTransfer": "OTA Transfer",
+  "sendingChunk": "Sending chunk {current}/{total}",
+  "@sendingChunk": { "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } } },
+  "firmwareUploadedSuccess": "Firmware uploaded successfully!",
+  "deviceWillVerify": "Device will verify and install the update.",
+  "rebootDevice": "Reboot Device",
+  "firmwareReady": "Firmware ready: {bytes} bytes",
+  "@firmwareReady": { "placeholders": { "bytes": { "type": "int" } } },
+  "startOtaUpdate": "Start OTA Update",
+  "otaTransferComplete": "OTA transfer complete! Device will reboot.",
+  "transferFailed": "Transfer failed: {error}",
+  "@transferFailed": { "placeholders": { "error": { "type": "String" } } },
+  "md5Mismatch": "MD5 mismatch! File may be corrupted.",
+
+  "debugModeDisabled": "Debug mode disabled",
+  "debugModeEnabled": "Debug mode enabled",
+  "debug": "Debug",
+  "disableDbg": "Disable DBG",
+  "subGhzTab": "Sub-GHz",
+  "nrfTab": "NRF",
+
+  "settingsSyncedWithDevice": "Settings synced with device",
+  "appSettings": "App Settings",
+  "appSettingsSubtitle": "Language, cache, permissions",
+  "rfSettings": "RF Settings",
+  "syncedWithDevice": "Synced with device",
+  "localOnly": "Local only",
+  "bruteforceSettings": "Bruteforce Settings",
+  "radioSettings": "Radio Settings",
+  "scannerSettings": "Scanner Settings",
+
+  "interFrameDelay": "Inter-frame Delay: {ms} ms",
+  "@interFrameDelay": { "placeholders": { "ms": { "type": "int" } } },
+  "delayBetweenTransmissions": "Delay between each RF transmission",
+  "repeatsCount": "Repeats: {count}x",
+  "@repeatsCount": { "placeholders": { "count": { "type": "int" } } },
+  "transmissionsPerCode": "Transmissions per code (1-10)",
+  "txPowerLevel": "TX Power: Level {level}",
+  "@txPowerLevel": { "placeholders": { "level": { "type": "int" } } },
+  "bruterTxPowerDesc": "Bruter transmission power (0=Min, 7=Max)",
+  "txPowerInfoDesc": "TX power in dBm. Higher = longer range but more interference. Default: +10 dBm.",
+
+  "rssiThreshold": "RSSI Threshold: {dbm} dBm",
+  "@rssiThreshold": { "placeholders": { "dbm": { "type": "int" } } },
+  "minSignalStrengthDesc": "Minimum signal strength to detect (-120 to -20)",
+
+  "nrf24Settings": "nRF24 Settings",
+  "nrf24SettingsSubtitle": "PA level, data rate, channel",
+  "nrf24ConfigDesc": "Configure the nRF24L01 radio module for MouseJack attacks, spectrum analysis, and jamming.",
+  "paLevel": "PA Level: {level}",
+  "@paLevel": { "placeholders": { "level": { "type": "String" } } },
+  "transmissionPowerDesc": "Transmission power (MIN → MAX)",
+  "nrfDataRate": "Data Rate: {rate}",
+  "@nrfDataRate": { "placeholders": { "rate": { "type": "String" } } },
+  "radioDataRateDesc": "Radio data rate — lower = longer range",
+  "defaultChannel": "Default Channel: {ch}",
+  "@defaultChannel": { "placeholders": { "ch": { "type": "int" } } },
+  "autoRetransmit": "Auto-Retransmit: {count}x",
+  "@autoRetransmit": { "placeholders": { "count": { "type": "int" } } },
+  "retransmitCountDesc": "Retransmit count on failure (0-15)",
+  "sendToDevice": "Send to Device",
+  "connectToDeviceToApply": "Connect to device to apply",
+  "nrf24SettingsSent": "nRF24 settings sent to device",
+  "failedToSendNrf24Settings": "Failed to send nRF24 settings: {error}",
+  "@failedToSendNrf24Settings": { "placeholders": { "error": { "type": "String" } } },
+
+  "hwButtons": "HW Buttons",
+  "configureHwButtonActions": "Configure hardware button actions",
+  "hwButtonsDesc": "Assign an action to each physical button on the device. Press \"Send to Device\" to apply.",
+  "button1Gpio34": "Button 1 (GPIO34)",
+  "button2Gpio35": "Button 2 (GPIO35)",
+  "buttonConfigSent": "Button config sent to device",
+  "failedToSendConfig": "Failed to send config: {error}",
+  "@failedToSendConfig": { "placeholders": { "error": { "type": "String" } } },
+
+  "firmwareInfo": "Firmware Info",
+  "versionLabel": "Version: v{version}",
+  "@versionLabel": { "placeholders": { "version": { "type": "String" } } },
+  "fwVersionDetails": "Major: {major} | Minor: {minor} | Patch: {patch}",
+  "@fwVersionDetails": { "placeholders": { "major": { "type": "int" }, "minor": { "type": "int" }, "patch": { "type": "int" } } },
+  "waitingForDeviceResponse": "Waiting for device response...\nPlease try again in a moment.",
+  "tapOtaUpdateDesc": "Tap \"OTA Update\" below to check for updates and flash new firmware.",
+  "deviceFwVersion": "Device FW: v{version}",
+  "@deviceFwVersion": { "placeholders": { "version": { "type": "String" } } },
+  "updateFirmwareDesc": "Update firmware via BLE OTA or check for new releases on GitHub.",
+  "checkFwVersion": "Check FW Version",
+  "otaUpdate": "OTA Update",
+  "connectToADeviceFirst": "Connect to a device first",
+
+  "checkingForAppUpdates": "Checking for app updates...",
+  "appUpToDate": "App is up to date (v{version})",
+  "@appUpToDate": { "placeholders": { "version": { "type": "String" } } },
+  "appUpdateAvailable": "App Update Available",
+  "currentVersionLabel": "Current: v{version}",
+  "@currentVersionLabel": { "placeholders": { "version": { "type": "String" } } },
+  "latestVersionLabel": "Latest: v{version}",
+  "@latestVersionLabel": { "placeholders": { "version": { "type": "String" } } },
+  "changelogLabel": "Changelog:",
+  "later": "Later",
+  "downloadAndInstall": "Download & Install",
+  "updateCheckFailed": "Update check failed: {error}",
+  "@updateCheckFailed": { "placeholders": { "error": { "type": "String" } } },
+  "downloadingApk": "Downloading APK...",
+  "apkSavedPleaseInstall": "APK saved to: {path}\nPlease install manually.",
+  "@apkSavedPleaseInstall": { "placeholders": { "path": { "type": "String" } } },
+  "checkAppUpdate": "Check App Update",
+  "about": "About",
+  "appName": "EvilCrow RF V2",
+  "appTagline": "Sub-GHz RF Security Tool",
+
+  "connectionStatus": "Connection Status",
+  "debugControls": "Debug Controls",
+  "clearCachedDevice": "Clear Cached Device",
+  "refreshFiles": "Refresh Files",
+  "activityLogs": "Activity Logs",
+
+  "hideUnknown": "Hide Unknown",
+  "sdCard": "SD Card",
+  "internal": "Internal",
+  "internalLittleFs": "Internal (LittleFS)",
+  "directory": "Directory",
+
+  "flashLocalBinary": "Flash Local Binary",
+  "selectBinFileDesc": "Select a .bin firmware file from your device to flash directly via BLE OTA.",
+  "selectBin": "Select .bin",
+  "flash": "Flash",
+  "fileLabel": "File: {path}",
+  "@fileLabel": { "placeholders": { "path": { "type": "String" } } },
+  "localFirmwareUploaded": "Local firmware uploaded!",
+  "changelogVersion": "Changelog — v{version}",
+  "@changelogVersion": { "placeholders": { "version": { "type": "String" } } },
+  "startingOtaTransfer": "Starting OTA transfer...",
+
+  "frequencyRequired": "Frequency is required",
+  "invalidFrequencyFormat": "Invalid frequency format",
+  "frequencyRangeError": "Frequency must be in range 300-348, 387-464, or 779-928 MHz",
+  "selectFrequency": "Select Frequency",
+  "invalidDataRateFormat": "Invalid data rate format",
+  "dataRateRangeError": "Data rate must be between {min} and {max} kBaud",
+  "@dataRateRangeError": { "placeholders": { "min": { "type": "String" }, "max": { "type": "String" } } },
+  "invalidDeviationFormat": "Invalid deviation format",
+  "deviationRangeError": "Deviation must be between {min} and {max} kHz",
+  "@deviationRangeError": { "placeholders": { "min": { "type": "String" }, "max": { "type": "String" } } },
+  "errors": "Errors",
+
+  "noSignalDataToPreview": "No signal data to preview",
+  "signalPreview": "Signal Preview",
+  "dataLength": "Data Length",
+  "sampleData": "Sample Data:",
+  "loadSignalFile": "Load Signal File",
+  "selectFile": "Select File",
+  "formats": "Formats",
+  "supportedFormatsShort": "Supported formats: .sub (FlipperZero), .json (TUT)",
+  "supportedFileFormats": "Supported File Formats",
+  "readyToTransmit": "Ready to Transmit",
+  "percentComplete": "{progress}% complete",
+  "@percentComplete": { "placeholders": { "progress": { "type": "int" } } },
+  "validationErrors": "Validation Errors",
+  "noTransmissionHistory": "No transmission history",
+  "transmissionHistory": "Transmission History",
+  "success": "Success",
+
+  "goUp": "Go Up",
+  "connectToDeviceToSeeFiles": "Connect to device to see files",
+  "noFilesAvailableForSelection": "No files available for selection",
+  "deselectFile": "Deselect file",
+  "selectFileTooltip": "Select file",
+  "saveToSignals": "Save to Signals",
+  "fullPath": "Full Path",
+  "downloadingFiles": "Downloading files...",
+  "close": "Close",
+  "root": "Root",
+  "noSubdirectories": "No subdirectories",
+  "storageLabel": "Storage: ",
+  "errorLoadingDirectories": "Error loading directories",
+  "select": "Select",
+
+  "settingsNotAvailable": "Settings not available",
+  "playingFile": "Playing file: {filename}",
+  "@playingFile": { "placeholders": { "filename": { "type": "String" } } },
+  "failedToSaveSignal": "Failed to save signal: {error}",
+  "@failedToSaveSignal": { "placeholders": { "error": { "type": "String" } } },
+  "failedToDeleteFile": "Failed to delete file: {error}",
+  "@failedToDeleteFile": { "placeholders": { "error": { "type": "String" } } },
+  "deletingFile": "Deleting file: {name}",
+  "@deletingFile": { "placeholders": { "name": { "type": "String" } } },
+  "recordScreenHelpContent": "This screen allows you to record RF signals using the CC1101 modules.\n\n• Select a module tab to configure its settings\n• Tap Start Recording to begin capturing\n• Detected signals appear in real-time\n• Save captured signals with custom names\n• Play back or transmit saved recordings\n\nFor best results, place the antenna close to the transmitter.",
+  "frequencySearchStarted": "Frequency search started for Module {number}",
+  "@frequencySearchStarted": { "placeholders": { "number": { "type": "int" } } },
+  "failedToStartFrequencySearch": "Failed to start frequency search: {error}",
+  "@failedToStartFrequencySearch": { "placeholders": { "error": { "type": "String" } } },
+  "failedToStopFrequencySearch": "Failed to stop frequency search: {error}",
+  "@failedToStopFrequencySearch": { "placeholders": { "error": { "type": "String" } } },
+
+  "standingOnShoulders": "Standing on the shoulders of giants",
+  "githubProfile": "GitHub Profile",
+  "donate": "Donate",
+
+  "sdrMode": "SDR MODE",
+  "sdrModeActiveSubtitle": "Active — SubGhz ops blocked",
+  "sdrModeInactiveSubtitle": "CC1101 spectrum & raw RX via USB",
+  "sdrConnectViaUsb": "Connect via USB serial for SDR streaming.",
+
+  "connectedStatus": "Connected",
+  "disconnectedStatus": "Disconnected",
+
+  "testCommands": "Test Commands:",
+  "deviceLabel": "Device: {name}",
+  "@deviceLabel": { "placeholders": { "name": { "type": "String" } } },
+  "deviceIdLabel": "ID: {id}",
+  "@deviceIdLabel": { "placeholders": { "id": { "type": "String" } } },
+
+  "stateIdle": "Idle",
+  "stateDetecting": "Detecting",
+  "stateRecording": "Recording",
+  "stateTransmitting": "Transmitting",
+  "stateUnknown": "Unknown",
+  "nrf24Jamming": "NRF24: Jamming",
+  "nrf24Scanning": "NRF24: Scanning",
+  "nrf24Attacking": "NRF24: Attacking",
+  "nrf24SpectrumActive": "NRF24: Spectrum",
+  "nrf24Idle": "NRF24: Idle",
+  "batteryTooltip": "Battery: {percentage}% ({volts} V){charging}",
+  "@batteryTooltip": { "placeholders": { "percentage": { "type": "int" }, "volts": { "type": "String" }, "charging": { "type": "String" } } },
+
+  "specialThanks": "★ Special Thanks ★",
+
+  "frequencyLabel": "Frequency",
+  "modulationLabel": "Modulation",
+  "dataRateLabel": "Data Rate",
+  "deviationLabel": "Deviation",
+  "dataLengthLabel": "Data Length",
+  "flipperSubGhzFormat": "FlipperZero SubGhz (.sub)",
+  "flipperSubGhzDetails": "• Raw signal data format\n• Used by Flipper Zero device\n• Contains frequency and modulation settings",
+  "tutJsonFormat": "TUT JSON (.json)",
+  "tutJsonDetails": "• JSON format with signal parameters\n• Used by TUT (Test & Utility Tool)\n• Contains frequency, data rate, and raw data",
+
+  "sdCardPath": "SD Card: {path}",
+  "@sdCardPath": { "placeholders": { "path": { "type": "String" } } },
+  "rfScanner": "RF Scanner",
+
+  "moreSamples": "+{count} more",
+  "@moreSamples": { "placeholders": { "count": { "type": "int" } } },
+  "sampleCount": "{count} samples",
+  "@sampleCount": { "placeholders": { "count": { "type": "int" } } },
+  "transmitHistorySubtitle": "{time} • Module {moduleNumber} • {repeatCount} repeats",
+  "@transmitHistorySubtitle": { "placeholders": { "time": { "type": "String" }, "moduleNumber": { "type": "int" }, "repeatCount": { "type": "int" } } },
+  "downloadingFile": "Downloading file: {name}",
+  "@downloadingFile": { "placeholders": { "name": { "type": "String" } } },
+  "moduleStatus": "Module {number}: {mode}",
+  "@moduleStatus": { "placeholders": { "number": { "type": "int" }, "mode": { "type": "String" } } },
+  "transmittingEllipsis": "Transmitting...",
+  "chargingIndicator": " ⚡ Charging"
+}
+

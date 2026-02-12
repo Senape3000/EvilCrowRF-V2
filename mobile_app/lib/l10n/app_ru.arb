@@ -1,0 +1,1272 @@
+{
+  "@@locale": "ru",
+  "appTitle": "Tut RF",
+  
+  "home": "Главная",
+  "brute": "Брут",
+  "record": "Запись",
+  "files": "Файлы",
+  "settings": "Настройки",
+  
+  "connectionRequired": "Требуется подключение",
+  "connectionRequiredMessage": "Пожалуйста, сначала подключитесь к устройству для доступа к этой функции.",
+  "ok": "ОК",
+  
+  "permissionError": "Ошибка разрешений",
+  
+  "disconnected": "Отключено",
+  "connected": "Подключено к {deviceName}",
+  "@connected": {
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "connecting": "Подключение...",
+  "connectingToKnownDevice": "Подключение к известному устройству...",
+  "scanningForDevice": "Поиск устройства...",
+  "deviceNotFound": "Устройство не найдено. Убедитесь, что оно включено и находится рядом.",
+  "connectionError": "Ошибка подключения: {error}",
+  "@connectionError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "bluetoothEnabled": "Bluetooth включен",
+  "bluetoothDisabled": "Bluetooth выключен",
+  "somePermissionsDenied": "Некоторые разрешения отклонены. Bluetooth может работать неправильно.",
+  "allPermissionsGranted": "Все разрешения предоставлены. Bluetooth готов к работе.",
+  "bluetoothScanPermissionsNotGranted": "Разрешения на сканирование Bluetooth не предоставлены",
+  "scanningForDevices": "Поиск устройств...",
+  "foundSupportedDevices": "Найдено поддерживаемых устройств: {count}. Нажмите для подключения.",
+  "@foundSupportedDevices": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noSupportedDevicesFound": "Поддерживаемые устройства не найдены. Убедитесь, что ESP32 включен и находится рядом.",
+  "scanError": "Ошибка сканирования: {error}",
+  "@scanError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "scanStopped": "Сканирование остановлено",
+  "stopScanError": "Ошибка остановки сканирования: {error}",
+  "@stopScanError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "requiredCharacteristicsNotFound": "Необходимые характеристики не найдены",
+  "requiredServiceNotFound": "Необходимая служба не найдена",
+  "knownDeviceCleared": "Известное устройство удалено. Следующее подключение будет искать устройства.",
+  "notConnected": "Не подключено",
+  "sendError": "Ошибка отправки: {error}",
+  "@sendError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "commandTimeout": "Превышено время ожидания команды - попробуйте снова",
+  "fileListLoadingTimeout": "Превышено время ожидания загрузки списка файлов - попробуйте снова",
+  "transmittingSignal": "Передача сигнала...",
+  "transmissionFailed": "Ошибка передачи: {error}",
+  "@transmissionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "disconnect": "Отключить",
+  "connect": "Подключить",
+  "scanForNewDevices": "Искать новые устройства",
+  "scanForDevices": "Искать устройства",
+  "scanAgain": "Искать снова",
+  "foundSupportedDevicesCount": "Найдено поддерживаемых устройств: {count}",
+  "@foundSupportedDevicesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unknownDevice": "Неизвестное устройство",
+  
+  "notConnectedToDevice": "Не подключено к устройству",
+  "connectToDeviceToManageFiles": "Подключитесь к устройству для управления файлами",
+  "refresh": "Обновить",
+  "stopLoading": "Остановить загрузку",
+  "createDirectory": "Создать папку",
+  "uploadFile": "Загрузить файл",
+  "exitMultiSelect": "Выйти из режима выбора",
+  "multiSelect": "Множественный выбор",
+  "directoryName": "Имя папки",
+  "enterDirectoryName": "Введите имя папки",
+  "create": "Создать",
+  "cancel": "Отмена",
+  
+  "copyFile": "Копировать файл",
+  "newFileName": "Новое имя файла",
+  "destination": "Назначение: {path}",
+  "@destination": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "copy": "Копировать",
+  
+  "renameDirectory": "Переименовать папку",
+  "renameFile": "Переименовать файл",
+  "newDirectoryName": "Новое имя папки",
+  "rename": "Переименовать",
+  
+  "deleteDirectory": "Удалить папку",
+  "deleteFile": "Удалить файл",
+  "deleteConfirm": "Вы уверены, что хотите удалить \"{name}\"?",
+  "@deleteConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "delete": "Удалить",
+  "deleteFiles": "Удалить файлы",
+  "deleteFilesConfirm": "Вы уверены, что хотите удалить {count} файлов?",
+  "@deleteFilesConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectedCount": "Выбрано: {count}",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "clearSelection": "Очистить выбор",
+  "deleteSelected": "Удалить выбранное",
+  
+  "moveDirectory": "Переместить папку",
+  "moveFile": "Переместить файл",
+  "move": "Переместить",
+  
+  "records": "Записи",
+  "signals": "Сигналы",
+  "captured": "Захвачено",
+  "presets": "Пресеты",
+  "temp": "Временные",
+  
+  "saveFileAs": "Сохранить файл как...",
+  "fileSaved": "Файл сохранен: {path}",
+  "@fileSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "fileContentCopiedToClipboard": "Содержимое файла скопировано в буфер обмена",
+  "fileSavedToDocuments": "Файл сохранен в Документы: {path}",
+  "@fileSavedToDocuments": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotSaveFile": "Не удалось сохранить файл. Содержимое скопировано в буфер обмена. Ошибка: {error}",
+  "@couldNotSaveFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailed": "Ошибка загрузки: {error}",
+  "@downloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailedNoContent": "Ошибка загрузки: Содержимое не получено",
+  "fileCopied": "Файл скопирован: {name}",
+  "@fileCopied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "copyFailed": "Ошибка копирования: {error}",
+  "@copyFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "directoryRenamed": "Папка переименована: {name}",
+  "@directoryRenamed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "fileRenamed": "Файл переименован: {name}",
+  "@fileRenamed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "renameFailed": "Ошибка переименования: {error}",
+  "@renameFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "directoryDeleted": "Папка удалена: {name}",
+  "@directoryDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "fileDeleted": "Файл удален: {name}",
+  "@fileDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteFailed": "Ошибка удаления: {error}",
+  "@deleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deletedFilesCount": "Удалено файлов: {count}{extra}",
+  "@deletedFilesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
+  "failed": "ошибок",
+  "directoryMoved": "Папка перемещена: {name}",
+  "@directoryMoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "fileMoved": "Файл перемещен: {name}",
+  "@fileMoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moveFailed": "Ошибка перемещения: {error}",
+  "@moveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "directoryCreated": "Папка создана: {name}",
+  "@directoryCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateDirectory": "Не удалось создать папку: {error}",
+  "@failedToCreateDirectory": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "uploadingFile": "Загрузка {fileName}...",
+  "@uploadingFile": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "fileUploaded": "Файл загружен: {fileName}",
+  "@fileUploaded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "uploadFailed": "Ошибка загрузки: {error}",
+  "@uploadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectedFileDoesNotExist": "Выбранный файл не существует",
+  "uploadError": "Ошибка загрузки",
+  "failedToPickFile": "Не удалось выбрать файл: {error}",
+  "@failedToPickFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "noLogsYet": "Логов пока нет",
+  "commandsAndResponsesWillAppearHere": "Команды и ответы будут отображаться здесь",
+  "logsCount": "Логи ({count})",
+  "@logsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "clearAllLogs": "Очистить все логи",
+  
+  "loadingFilePreview": "Загрузка preview файла...",
+  "previewError": "Ошибка предпросмотра",
+  "retry": "Повторить",
+  "chars": "{count} символов",
+  "@chars": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "previewTruncated": "Предпросмотр обрезан. Откройте файл, чтобы увидеть полное содержимое.",
+  
+  "clearFileCache": "Очистить кеш файлов",
+  "rebootDevice": "Перезагрузить устройство",
+  "requestPermissions": "Запросить разрешения",
+  
+  "sendCommand": "Отправить команду",
+  "enterCommand": "Введите команду",
+  "commandHint": "например, SCAN, RECORD, PLAY",
+  "send": "Отправить",
+  
+  "scanner": "Сканер",
+  "clearList": "Очистить список",
+  "stop": "Остановить",
+  "start": "Запустить",
+  
+  "language": "Язык",
+  "selectLanguage": "Выберите язык",
+  "english": "English",
+  "russian": "Русский",
+  "systemDefault": "По умолчанию системы",
+  
+  "deviceStatus": "Статус устройства",
+  "subGhzModule": "Sub-GHz Модуль {number}",
+  "@subGhzModule": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "connectedToDevice": "Подключено: {deviceName}",
+  "@connectedToDevice": {
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "sdCardReady": "SD карта готова",
+  "freeHeap": "Свободная память: {kb} КБ",
+  "@freeHeap": {
+    "placeholders": {
+      "kb": {
+        "type": "String"
+      }
+    }
+  },
+  "notifications": "Уведомления",
+  "noNotifications": "Нет уведомлений",
+  "clearAll": "Очистить все",
+  "justNow": "Только что",
+  "minutesAgo": " мин назад",
+  "hoursAgo": " ч назад",
+  "daysAgo": " дн назад",
+  "frequency": "Частота",
+  "modulation": "Манипуляция",
+  "dataRate": "Скорость передачи данных",
+  "bandwidth": "Полоса пропускания",
+  "deviation": "Отклонение",
+  "rxBandwidth": "Полоса пропускания RX",
+  "protocol": "Протокол",
+  "preset": "Пресет",
+  "signalName": "Имя сигнала",
+  "settingsParseError": "Ошибка разбора настроек",
+  "unknown": "Неизвестно",
+  "idle": "Ожидание",
+  "detecting": "Обнаружение",
+  "recording": "Запись",
+  "jamming": "Глушение",
+  "jammingSettings": "Настройки глушения",
+  "transmitting": "Передача",
+  "scanning": "Сканирование",
+  
+  "statusIdle": "Бездействие",
+  "statusRecording": "Запись",
+  "statusScanning": "Сканирование",
+  "statusTransmitting": "Отправка",
+  
+  "kbps": "кбит/с",
+  "hz": "Гц",
+  
+  "modulationAskOok": "ASK/OOK (АМн-ВВ)",
+  "modulation2Fsk": "2-FSK (ЧМн-2)",
+  "modulation4Fsk": "4-FSK (ЧМн-4)",
+  "modulationGfsk": "GFSK (ГЧМн)",
+  "modulationMsk": "MSK (ММн)",
+  
+  "startRecordingToCaptureSignals": "Начните запись для захвата сигналов",
+  "frequencySearchStoppedForModule": "Поиск частоты остановлен для Модуля {number}",
+  "@frequencySearchStoppedForModule": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "error": "Ошибка",
+  "deviceNotConnected": "Устройство не подключено",
+  "validationError": "Ошибка валидации",
+  "moduleBusy": "Модуль занят",
+  "moduleBusyMessage": "Модуль {number} сейчас в режиме \"{mode}\".\\nДождитесь завершения текущей операции или переведите модуль в режим Ожидание.",
+  "@moduleBusyMessage": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "recordingStarted": "Запись начата на Модуле №{number}",
+  "@recordingStarted": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "recordingError": "Ошибка записи",
+  "recordingStartFailed": "Не удалось начать запись: {error}",
+  "@recordingStartFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recordingStopped": "Запись остановлена на Модуле №{number}",
+  "@recordingStopped": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "recordingStopFailed": "Не удалось остановить запись: {error}",
+  "@recordingStopFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "module": "Модуль {number}",
+  "@module": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "startRecording": "Начать запись",
+  "stopRecording": "Остановить запись",
+  "moduleBusy": "Модуль занят",
+  "advanced": "Расширенные",
+  "startJamming": "Начать глушение",
+  "stopJamming": "Остановить глушение",
+  "jammingStarted": "Глушение запущено на Модуле №{module}",
+  "@jammingStarted": {
+    "placeholders": {
+      "module": {
+        "type": "int"
+      }
+    }
+  },
+  "jammingStopped": "Глушение остановлено на Модуле №{module}",
+  "@jammingStopped": {
+    "placeholders": {
+      "module": {
+        "type": "int"
+      }
+    }
+  },
+  "jammingError": "Ошибка глушения",
+  "jammingStartFailed": "Не удалось запустить глушение: {error}",
+  "@jammingStartFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "jammingStopFailed": "Не удалось остановить глушение: {error}",
+  "@jammingStopFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "stopFrequencySearch": "Остановить поиск частоты",
+  "searchForFrequency": "Искать частоту",
+  "signalsCaptured": "Сигналов захвачено на Модуле №{number}: {count}",
+  "@signalsRecorded": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recordedFiles": "Записанные файлы",
+  "saveSignal": "Сохранить сигнал",
+  "enterSignalName": "Введите имя для сигнала:",
+  "deleteSignal": "Удалить сигнал",
+  "deleteSignalConfirm": "Вы уверены, что хотите удалить \"{filename}\"?\\n\\nЭто действие нельзя отменить.",
+  "@deleteSignalConfirm": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "recordScreenHelp": "Справка по экрану записи",
+  
+  "fileDownloadedSuccessfully": "Файл \"{fileName}\" успешно загружен",
+  "@fileDownloadedSuccessfully": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "imagePreviewNotSupported": "Предпросмотр изображений пока не поддерживается",
+  "viewAsText": "Просмотр как текст",
+  "failedToParseFile": "Не удалось разобрать файл",
+  "signalParameters": "Параметры сигнала",
+  "signalData": "Данные сигнала",
+  "samplesCount": "Количество сэмплов",
+  "rawData": "Необработанные данные:",
+  "binaryData": "Двоичные данные:",
+  "warnings": "Предупреждения",
+  "noContentAvailable": "Содержимое недоступно",
+  "copyToClipboard": "Копировать в буфер обмена",
+  "downloadFile": "Загрузить файл",
+  "transmitSignal": "Передать сигнал",
+  "reload": "Перезагрузить",
+  "parsed": "Разобрано",
+  "raw": "Исходный",
+  "loadingFile": "Загрузка файла...",
+  "notConnectedToDeviceFile": "Не подключено к устройству",
+  "connectToDeviceToViewFiles": "Подключитесь к устройству для просмотра файлов",
+  
+  "transmitSignal": "Передать сигнал",
+  "transmitSignalConfirm": "Это передаст сигнал из этого файла.",
+  "file": "Файл",
+  "transmitWarning": "Используйте только в контролируемых условиях. Проверьте местные правила.",
+  "dontShowAgain": "Больше не показывать",
+  "resetTransmitConfirmation": "Сбросить подтверждение передачи",
+  "transmitConfirmationReset": "Диалог подтверждения передачи сброшен.",
+  "transmit": "Передать",
+  "signalTransmissionStarted": "Передача сигнала начата: {fileName}",
+  "@signalTransmissionStarted": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "transmissionError": "Ошибка передачи: {error}",
+  "@transmissionError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "view": "Просмотр",
+  "save": "Сохранить",
+  "send": "Отправить",
+  "loadingFiles": "Загрузка файлов...",
+  "noRecordedFiles": "Нет записанных файлов",
+  "noFilesFound": "Файлы не найдены",
+  
+  "recordSettings": "Настройки записи",
+  "mhz": "МГц",
+  "khz": "кГц",
+  "kbaud": "кБод",
+  "bandwidth": "Полоса пропускания",
+  
+  "signalSavedAs": "Сигнал сохранён как: {fileName}",
+  "@signalSavedAs": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "transmittingFile": "Передача сигнала из файла: {fileName}",
+  "@transmittingFile": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "recordingShort": "Запись",
+  "freqShort": "Част",
+  "modShort": "Мод",
+  "rateShort": "Скорость",
+  "bwShort": "Полоса",
+  
+  "clearDeviceCache": "Очистить кеш устройств",
+  "clearDeviceCacheDescription": "Удалить сохранённую информацию об устройствах",
+  
+  "filesLoadedCount": "Загружено файлов: {loaded} из {total}",
+  "@filesLoadedCount": {
+    "placeholders": {
+      "loaded": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "filesInDirectory": "Файлов в директории: {count}",
+  "@filesInDirectory": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noFiles": "Нет файлов",
+  "loadingFiles": "Загрузка...",
+
+  "searchProtocols": "Поиск протоколов...",
+  "attackMode": "Режим атаки:",
+  "standardMode": "Стандарт",
+  "deBruijnMode": "Де Брёйн",
+  "noProtocolsFound": "Протоколы не найдены",
+  "pausedProtocol": "Пауза: {name}",
+  "@pausedProtocol": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "bruteForceRunning": "Брутфорс запущен: {name}",
+  "@bruteForceRunning": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "bruteResume": "ПРОДОЛЖ.",
+  "brutePause": "ПАУЗА",
+  "bruteStop": "СТОП",
+  "resumeInfo": "При продолжении будут переотправлены 5 кодов перед точкой паузы.",
+  "startBruteForce": "Запустить брутфорс",
+  "startBruteForceSuffix": "Запустить брутфорс{suffix}",
+  "@startBruteForceSuffix": {
+    "placeholders": {
+      "suffix": { "type": "String" }
+    }
+  },
+  "keySpace": "Пространство ключей",
+  "delay": "Задержка",
+  "estTime": "Прим. время",
+  "largeKeyspaceWarning": "{bits}-битное пространство ключей очень велико. Полное сканирование может занять {time}.",
+  "@largeKeyspaceWarning": {
+    "placeholders": {
+      "bits": { "type": "int" },
+      "time": { "type": "String" }
+    }
+  },
+  "deviceWillTransmit": "Устройство начнёт передачу. Вы можете остановить в любой момент.",
+  "bruteForceStarted": "Брутфорс запущен: {name}",
+  "@bruteForceStarted": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "failedToStart": "Не удалось запустить: {error}",
+  "@failedToStart": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "bruteForcePausing": "Приостановка брутфорса...",
+  "failedToPause": "Не удалось приостановить: {error}",
+  "@failedToPause": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "bruteForceResumed": "Брутфорс возобновлён",
+  "failedToResume": "Не удалось возобновить: {error}",
+  "@failedToResume": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "savedStateDiscarded": "Сохранённое состояние брутера сброшено",
+  "failedToDiscard": "Не удалось сбросить состояние: {error}",
+  "@failedToDiscard": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "bruteForceStopped": "Брутфорс остановлен",
+  "failedToStop": "Не удалось остановить: {error}",
+  "@failedToStop": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "bruteForceCompleted": "Брутфорс завершён: {name}",
+  "@bruteForceCompleted": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "bruteForceCancelled": "Брутфорс отменён: {name}",
+  "@bruteForceCancelled": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "bruteForceErrorMsg": "Ошибка брутфорса: {name}",
+  "@bruteForceErrorMsg": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "deBruijnCompatible": "Де Брёйн ✓",
+  "deBruijnTooltip": "Последовательности Де Брёйна покрывают все n-битные комбинации в одном непрерывном потоке — ~90x быстрее",
+  "deBruijnFaster": "Де Брёйн (~в 90 раз быстрее)",
+  "modeLabel": "Режим",
+
+  "moduleLabel": "Модуль:",
+  "cc1101Module1": "CC1101-1",
+  "cc1101Module2": "CC1101-2",
+  "rssiLabel": "RSSI:",
+  "scanningActive": "Сканирование активно",
+  "scanningStopped": "Сканирование остановлено",
+  "signalList": "Список сигналов",
+  "spectrogramView": "Спектрограмма",
+  "searchingForSignals": "Поиск сигналов...",
+  "pressStartToScan": "Нажмите Старт для начала сканирования",
+  "signalSpectrogram": "Спектрограмма сигнала",
+  "signalStrengthStrong": "Сильный",
+  "signalStrengthMedium": "Средний",
+  "signalStrengthWeak": "Слабый",
+  "signalStrengthNone": "Нет",
+  "errorStartingScan": "Ошибка запуска сканирования: {error}",
+  "@errorStartingScan": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "errorStoppingScan": "Ошибка остановки сканирования: {error}",
+  "@errorStoppingScan": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+
+  "transmitSettings": "Настройки передачи",
+  "advancedMode": "Расширенный режим",
+  "manualConfiguration": "Ручная настройка",
+  "usePresets": "Использовать пресеты",
+  "transmitData": "Данные для передачи",
+  "rawDataLabel": "Исходные данные",
+  "rawDataHint": "Введите данные сигнала (напр., 100 200 300 400)",
+  "repeatCount": "Число повторов",
+  "repeatCountHint": "1-100",
+  "loadFile": "Загрузить файл",
+  "transmitScreenHelp": "Справка по экрану передачи",
+  "transmitScreenHelpContent": "Этот экран позволяет передавать RF-сигналы через модули CC1101.\n\n• Выберите вкладку модуля для настройки\n• Переключайтесь между простым и расширенным режимами\n• Простой режим использует пресеты для быстрой настройки\n• Расширенный режим позволяет точную настройку параметров\n• Введите данные сигнала в текстовое поле\n• Установите число повторов (1-100)\n• Используйте «Загрузить файл» для загрузки данных из файла\n• Нажмите «Передать сигнал» для начала передачи\n\nУбедитесь, что устройство подключено перед передачей.",
+  "statusLabelWithMode": "Статус: {mode}",
+  "@statusLabelWithMode": {
+    "placeholders": {
+      "mode": { "type": "String" }
+    }
+  },
+  "connectionConnected": "Подключено",
+  "connectionDisconnected": "Отключено",
+  "connectionLabelWithStatus": "Подключение: {status}",
+  "@connectionLabelWithStatus": {
+    "placeholders": {
+      "status": { "type": "String" }
+    }
+  },
+  "transmissionStartedOnModule": "Передача начата на Модуле №{number}",
+  "@transmissionStartedOnModule": {
+    "placeholders": {
+      "number": { "type": "int" }
+    }
+  },
+  "failedToStartTransmission": "Не удалось начать передачу: {error}",
+  "@failedToStartTransmission": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "featureInDevelopment": "Функция в разработке",
+  "fileSelectionLater": "Выбор файлов будет добавлен позже",
+  "moduleBusyTransmitMessage": "Модуль {number} сейчас в режиме \"{mode}\".\nДождитесь завершения текущей операции или переведите модуль в режим Ожидание.",
+  "@moduleBusyTransmitMessage": {
+    "placeholders": {
+      "number": { "type": "int" },
+      "mode": { "type": "String" }
+    }
+  },
+  "invalidFrequencyClosest": "Некорректная частота {freq} МГц. Ближайшая допустимая: {closest} МГц",
+  "@invalidFrequencyClosest": {
+    "placeholders": {
+      "freq": { "type": "String" },
+      "closest": { "type": "String" }
+    }
+  },
+  "invalidFrequencySimple": "Некорректная частота {freq} МГц",
+  "@invalidFrequencySimple": {
+    "placeholders": {
+      "freq": { "type": "String" }
+    }
+  },
+  "invalidModuleNumber": "Некорректный номер модуля: {number}",
+  "@invalidModuleNumber": {
+    "placeholders": {
+      "number": { "type": "int" }
+    }
+  },
+  "rawDataRequired": "Данные сигнала обязательны для передачи",
+  "repeatCountRange": "Число повторов должно быть от 1 до 100",
+  "invalidDataRateValue": "Некорректная скорость передачи {rate} кБод",
+  "@invalidDataRateValue": {
+    "placeholders": {
+      "rate": { "type": "String" }
+    }
+  },
+  "invalidDeviationValue": "Некорректное отклонение {value} кГц",
+  "@invalidDeviationValue": {
+    "placeholders": {
+      "value": { "type": "String" }
+    }
+  },
+  "transmissionErrorLabel": "Ошибка передачи",
+  "allCategory": "Все",
+
+  "nrfModule": "Модуль nRF24L01",
+  "nrfSubtitle": "MouseJack / Спектр / Глушилка",
+  "nrfInitialize": "Инициализировать NRF24",
+  "nrfNotDetected": "Модуль nRF24L01 не обнаружен",
+  "connectToDeviceFirst": "Сначала подключитесь к устройству",
+
+  "mouseJack": "MouseJack",
+  "spectrum": "Спектр",
+  "jammer": "Глушилка",
+
+  "scan": "Сканирование",
+  "startScan": "Начать сканирование",
+  "stopScan": "Остановить сканирование",
+  "refreshTargets": "Обновить цели",
+  "targetsCount": "Цели ({count})",
+  "@targetsCount": { "placeholders": { "count": { "type": "int" } } },
+  "noDevicesFoundYet": "Устройства пока не найдены",
+
+  "attack": "Атака",
+  "injectText": "Отправить текст",
+  "textToInject": "Текст для отправки...",
+  "send": "Отправить",
+  "duckyScript": "DuckyScript",
+  "duckyPathHint": "/DATA/DUCKY/payload.txt",
+  "run": "Запуск",
+  "stopAttack": "Остановить атаку",
+
+  "startAnalyzer": "Запустить анализатор",
+  "stop": "Стоп",
+  "channelLabel": "CH {ch}",
+  "@channelLabel": { "placeholders": { "ch": { "type": "int" } } },
+
+  "jammerDisclaimer": "Только для образовательных целей. Глушение может быть незаконным.",
+  "mode": "Режим",
+  "fullSpectrum": "Полный спектр",
+  "fullSpectrumDesc": "1-124 канала",
+  "wifiMode": "WiFi",
+  "wifiModeDesc": "Каналы WiFi 2.4 ГГц",
+  "bleMode": "BLE",
+  "bleModeDesc": "Каналы данных BLE",
+  "bleAdvertising": "BLE реклама",
+  "bleAdvertisingDesc": "Рекламные каналы BLE",
+  "bluetooth": "Bluetooth",
+  "bluetoothDesc": "Классические каналы BT",
+  "usbWireless": "USB беспроводной",
+  "usbWirelessDesc": "Каналы USB беспроводных",
+  "videoStreaming": "Видеопоток",
+  "videoStreamingDesc": "Видео каналы",
+  "rcControllers": "RC контроллеры",
+  "rcControllersDesc": "Каналы RC",
+  "singleChannel": "Один канал",
+  "singleChannelDesc": "Один конкретный канал",
+  "customHopper": "Свой хоппер",
+  "customHopperDesc": "Диапазон + шаг",
+  "channel": "Канал",
+  "channelFreq": "Канал: {ch} ({freq} МГц)",
+  "@channelFreq": { "placeholders": { "ch": { "type": "int" }, "freq": { "type": "int" } } },
+  "hopperConfig": "Настройки хоппера",
+  "start": "Старт",
+  "stopLabel": "Стоп",
+  "step": "Шаг",
+  "startJammer": "Запустить глушилку",
+  "stopJammer": "Остановить глушилку",
+
+  "deviceInfo": "Информация",
+  "currentFirmware": "Текущая прошивка",
+  "freeHeap": "Свободная память",
+  "freeHeapBytes": "{bytes} байт",
+  "@freeHeapBytes": { "placeholders": { "bytes": { "type": "int" } } },
+  "connection": "Подключение",
+  "firmwareUpdate": "Обновление прошивки",
+  "latestVersion": "Последняя версия",
+  "updateAvailable": "Доступно обновление",
+  "upToDate": "Нет (актуальная)",
+  "yes": "Да",
+  "checkForUpdates": "Проверить обновления",
+  "checking": "Проверка...",
+  "download": "Скачать",
+  "downloading": "Загрузка прошивки...",
+  "downloadComplete": "Загрузка завершена ({bytes} байт)",
+  "@downloadComplete": { "placeholders": { "bytes": { "type": "int" } } },
+  "noNewVersion": "Новых версий нет.",
+  "apiError": "Ошибка API",
+  "otaTransfer": "OTA передача",
+  "sendingChunk": "Отправка блока {current}/{total}",
+  "@sendingChunk": { "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } } },
+  "firmwareUploadedSuccess": "Прошивка загружена успешно!",
+  "deviceWillVerify": "Устройство проверит и установит обновление.",
+  "rebootDevice": "Перезагрузить",
+  "firmwareReady": "Прошивка готова: {bytes} байт",
+  "@firmwareReady": { "placeholders": { "bytes": { "type": "int" } } },
+  "startOtaUpdate": "Начать OTA обновление",
+  "otaTransferComplete": "OTA передача завершена! Устройство перезагрузится.",
+  "transferFailed": "Ошибка передачи: {error}",
+  "@transferFailed": { "placeholders": { "error": { "type": "String" } } },
+  "md5Mismatch": "Несовпадение MD5! Файл повреждён.",
+
+  "debugModeDisabled": "Режим отладки отключён",
+  "debugModeEnabled": "Режим отладки включён",
+  "debug": "Отладка",
+  "disableDbg": "Отключить DBG",
+  "subGhzTab": "Sub-GHz",
+  "nrfTab": "NRF",
+
+  "settingsSyncedWithDevice": "Настройки синхронизированы с устройством",
+  "appSettings": "Настройки приложения",
+  "appSettingsSubtitle": "Язык, кэш, разрешения",
+  "rfSettings": "Настройки RF",
+  "syncedWithDevice": "Синхронизировано с устройством",
+  "localOnly": "Только локально",
+  "bruteforceSettings": "Настройки брутфорса",
+  "radioSettings": "Настройки радио",
+  "scannerSettings": "Настройки сканера",
+
+  "interFrameDelay": "Задержка: {ms} мс",
+  "@interFrameDelay": { "placeholders": { "ms": { "type": "int" } } },
+  "delayBetweenTransmissions": "Задержка между передачами RF",
+  "repeatsCount": "Повторы: {count}x",
+  "@repeatsCount": { "placeholders": { "count": { "type": "int" } } },
+  "transmissionsPerCode": "Передач на код (1-10)",
+  "txPowerLevel": "Мощность TX: Уровень {level}",
+  "@txPowerLevel": { "placeholders": { "level": { "type": "int" } } },
+  "bruterTxPowerDesc": "Мощность передачи брутера (0=Мин, 7=Макс)",
+  "txPowerInfoDesc": "Мощность TX в дБм. Больше = дальше, но больше помех. По умолчанию: +10 дБм.",
+
+  "rssiThreshold": "Порог RSSI: {dbm} дБм",
+  "@rssiThreshold": { "placeholders": { "dbm": { "type": "int" } } },
+  "minSignalStrengthDesc": "Минимальная сила сигнала для обнаружения (от -120 до -20)",
+
+  "nrf24Settings": "Настройки nRF24",
+  "nrf24SettingsSubtitle": "PA уровень, скорость, канал",
+  "nrf24ConfigDesc": "Конфигурация модуля nRF24L01 для атак MouseJack, анализа спектра и глушения.",
+  "paLevel": "Уровень PA: {level}",
+  "@paLevel": { "placeholders": { "level": { "type": "String" } } },
+  "transmissionPowerDesc": "Мощность передачи (MIN → MAX)",
+  "nrfDataRate": "Скорость: {rate}",
+  "@nrfDataRate": { "placeholders": { "rate": { "type": "String" } } },
+  "radioDataRateDesc": "Скорость данных — ниже = дальше",
+  "defaultChannel": "Канал по умолчанию: {ch}",
+  "@defaultChannel": { "placeholders": { "ch": { "type": "int" } } },
+  "autoRetransmit": "Авто-повтор: {count}x",
+  "@autoRetransmit": { "placeholders": { "count": { "type": "int" } } },
+  "retransmitCountDesc": "Количество повторных передач при ошибке (0-15)",
+  "sendToDevice": "Отправить на устройство",
+  "connectToDeviceToApply": "Подключитесь к устройству для применения",
+  "nrf24SettingsSent": "Настройки nRF24 отправлены",
+  "failedToSendNrf24Settings": "Не удалось отправить настройки nRF24: {error}",
+  "@failedToSendNrf24Settings": { "placeholders": { "error": { "type": "String" } } },
+
+  "hwButtons": "Кнопки",
+  "configureHwButtonActions": "Настроить действия кнопок",
+  "hwButtonsDesc": "Назначьте действие каждой кнопке устройства. Нажмите «Отправить» для применения.",
+  "button1Gpio34": "Кнопка 1 (GPIO34)",
+  "button2Gpio35": "Кнопка 2 (GPIO35)",
+  "buttonConfigSent": "Конфигурация кнопок отправлена",
+  "failedToSendConfig": "Не удалось отправить конфигурацию: {error}",
+  "@failedToSendConfig": { "placeholders": { "error": { "type": "String" } } },
+
+  "firmwareInfo": "Информация о прошивке",
+  "versionLabel": "Версия: v{version}",
+  "@versionLabel": { "placeholders": { "version": { "type": "String" } } },
+  "fwVersionDetails": "Мажорная: {major} | Минорная: {minor} | Патч: {patch}",
+  "@fwVersionDetails": { "placeholders": { "major": { "type": "int" }, "minor": { "type": "int" }, "patch": { "type": "int" } } },
+  "waitingForDeviceResponse": "Ожидание ответа устройства...\nПопробуйте снова через мгновение.",
+  "tapOtaUpdateDesc": "Нажмите «OTA обновление» для проверки обновлений и прошивки.",
+  "deviceFwVersion": "Прошивка: v{version}",
+  "@deviceFwVersion": { "placeholders": { "version": { "type": "String" } } },
+  "updateFirmwareDesc": "Обновление прошивки через BLE OTA или проверка новых версий на GitHub.",
+  "checkFwVersion": "Проверить версию",
+  "otaUpdate": "OTA обновление",
+  "connectToADeviceFirst": "Сначала подключите устройство",
+
+  "checkingForAppUpdates": "Проверка обновлений приложения...",
+  "appUpToDate": "Приложение обновлено (v{version})",
+  "@appUpToDate": { "placeholders": { "version": { "type": "String" } } },
+  "appUpdateAvailable": "Доступно обновление",
+  "currentVersionLabel": "Текущая: v{version}",
+  "@currentVersionLabel": { "placeholders": { "version": { "type": "String" } } },
+  "latestVersionLabel": "Новая: v{version}",
+  "@latestVersionLabel": { "placeholders": { "version": { "type": "String" } } },
+  "changelogLabel": "Список изменений:",
+  "later": "Позже",
+  "downloadAndInstall": "Скачать и установить",
+  "updateCheckFailed": "Ошибка проверки обновления: {error}",
+  "@updateCheckFailed": { "placeholders": { "error": { "type": "String" } } },
+  "downloadingApk": "Загрузка APK...",
+  "apkSavedPleaseInstall": "APK сохранён: {path}\nУстановите вручную.",
+  "@apkSavedPleaseInstall": { "placeholders": { "path": { "type": "String" } } },
+  "checkAppUpdate": "Проверить обновление",
+  "about": "О программе",
+  "appName": "EvilCrow RF V2",
+  "appTagline": "Инструмент RF-безопасности Sub-GHz",
+
+  "connectionStatus": "Состояние подключения",
+  "debugControls": "Управление отладкой",
+  "clearCachedDevice": "Очистить кэш устройства",
+  "refreshFiles": "Обновить файлы",
+  "activityLogs": "Журнал активности",
+
+  "hideUnknown": "Скрыть неизвестные",
+  "sdCard": "SD-карта",
+  "internal": "Внутренняя",
+  "internalLittleFs": "Внутренняя (LittleFS)",
+  "directory": "Каталог",
+
+  "flashLocalBinary": "Прошить локальный файл",
+  "selectBinFileDesc": "Выберите файл .bin прошивки для прямой загрузки через BLE OTA.",
+  "selectBin": "Выбрать .bin",
+  "flash": "Прошить",
+  "fileLabel": "Файл: {path}",
+  "@fileLabel": { "placeholders": { "path": { "type": "String" } } },
+  "localFirmwareUploaded": "Локальная прошивка загружена!",
+  "changelogVersion": "Изменения — v{version}",
+  "@changelogVersion": { "placeholders": { "version": { "type": "String" } } },
+  "startingOtaTransfer": "Начало OTA передачи...",
+
+  "frequencyRequired": "Частота обязательна",
+  "invalidFrequencyFormat": "Неверный формат частоты",
+  "frequencyRangeError": "Частота должна быть в диапазоне 300-348, 387-464 или 779-928 МГц",
+  "selectFrequency": "Выберите частоту",
+  "invalidDataRateFormat": "Неверный формат скорости",
+  "dataRateRangeError": "Скорость должна быть от {min} до {max} кБод",
+  "@dataRateRangeError": { "placeholders": { "min": { "type": "String" }, "max": { "type": "String" } } },
+  "invalidDeviationFormat": "Неверный формат девиации",
+  "deviationRangeError": "Девиация должна быть от {min} до {max} кГц",
+  "@deviationRangeError": { "placeholders": { "min": { "type": "String" }, "max": { "type": "String" } } },
+  "errors": "Ошибки",
+
+  "noSignalDataToPreview": "Нет данных для предпросмотра",
+  "signalPreview": "Предпросмотр сигнала",
+  "dataLength": "Длина данных",
+  "sampleData": "Пример данных:",
+  "loadSignalFile": "Загрузить файл сигнала",
+  "selectFile": "Выбрать файл",
+  "formats": "Форматы",
+  "supportedFormatsShort": "Поддерживаемые форматы: .sub (FlipperZero), .json (TUT)",
+  "supportedFileFormats": "Поддерживаемые форматы файлов",
+  "readyToTransmit": "Готово к передаче",
+  "percentComplete": "{progress}% завершено",
+  "@percentComplete": { "placeholders": { "progress": { "type": "int" } } },
+  "validationErrors": "Ошибки валидации",
+  "noTransmissionHistory": "Нет истории передач",
+  "transmissionHistory": "История передач",
+  "success": "Успешно",
+
+  "goUp": "Наверх",
+  "connectToDeviceToSeeFiles": "Подключите устройство для просмотра файлов",
+  "noFilesAvailableForSelection": "Нет файлов для выбора",
+  "deselectFile": "Отменить выбор",
+  "selectFileTooltip": "Выбрать файл",
+  "saveToSignals": "Сохранить в сигналы",
+  "fullPath": "Полный путь",
+  "downloadingFiles": "Загрузка файлов...",
+  "close": "Закрыть",
+  "root": "Корень",
+  "noSubdirectories": "Нет подкаталогов",
+  "storageLabel": "Хранилище: ",
+  "errorLoadingDirectories": "Ошибка загрузки каталогов",
+  "select": "Выбрать",
+
+  "settingsNotAvailable": "Настройки недоступны",
+  "playingFile": "Воспроизведение файла: {filename}",
+  "@playingFile": { "placeholders": { "filename": { "type": "String" } } },
+  "failedToSaveSignal": "Не удалось сохранить сигнал: {error}",
+  "@failedToSaveSignal": { "placeholders": { "error": { "type": "String" } } },
+  "failedToDeleteFile": "Не удалось удалить файл: {error}",
+  "@failedToDeleteFile": { "placeholders": { "error": { "type": "String" } } },
+  "deletingFile": "Удаление файла: {name}",
+  "@deletingFile": { "placeholders": { "name": { "type": "String" } } },
+  "recordScreenHelpContent": "Этот экран позволяет записывать RF-сигналы с помощью модулей CC1101.\n\n• Выберите вкладку модуля для настройки\n• Нажмите «Старт» для начала записи\n• Обнаруженные сигналы появляются в реальном времени\n• Сохраняйте записи с пользовательскими именами\n• Воспроизводите или передавайте сохранённые записи\n\nДля лучших результатов поместите антенну ближе к передатчику.",
+  "frequencySearchStarted": "Поиск частоты начат для модуля {number}",
+  "@frequencySearchStarted": { "placeholders": { "number": { "type": "int" } } },
+  "failedToStartFrequencySearch": "Не удалось начать поиск частоты: {error}",
+  "@failedToStartFrequencySearch": { "placeholders": { "error": { "type": "String" } } },
+  "failedToStopFrequencySearch": "Не удалось остановить поиск частоты: {error}",
+  "@failedToStopFrequencySearch": { "placeholders": { "error": { "type": "String" } } },
+
+  "standingOnShoulders": "Стоя на плечах гигантов",
+  "githubProfile": "Профиль GitHub",
+  "donate": "Пожертвовать",
+
+  "sdrMode": "Режим SDR",
+  "sdrModeActiveSubtitle": "Активен — операции SubGhz заблокированы",
+  "sdrModeInactiveSubtitle": "Спектр CC1101 и приём через USB",
+  "sdrConnectViaUsb": "Подключитесь через USB serial для потоковой передачи SDR.",
+
+  "connectedStatus": "Подключено",
+  "disconnectedStatus": "Отключено",
+
+  "testCommands": "Тестовые команды:",
+  "deviceLabel": "Устройство: {name}",
+  "@deviceLabel": { "placeholders": { "name": { "type": "String" } } },
+  "deviceIdLabel": "ID: {id}",
+  "@deviceIdLabel": { "placeholders": { "id": { "type": "String" } } },
+
+  "stateIdle": "Ожидание",
+  "stateDetecting": "Обнаружение",
+  "stateRecording": "Запись",
+  "stateTransmitting": "Передача",
+  "stateUnknown": "Неизвестно",
+  "nrf24Jamming": "NRF24: Глушение",
+  "nrf24Scanning": "NRF24: Сканирование",
+  "nrf24Attacking": "NRF24: Атака",
+  "nrf24SpectrumActive": "NRF24: Спектр",
+  "nrf24Idle": "NRF24: Ожидание",
+  "batteryTooltip": "Батарея: {percentage}% ({volts} В){charging}",
+  "@batteryTooltip": { "placeholders": { "percentage": { "type": "int" }, "volts": { "type": "String" }, "charging": { "type": "String" } } },
+
+  "specialThanks": "★ Благодарности ★",
+
+  "frequencyLabel": "Частота",
+  "modulationLabel": "Модуляция",
+  "dataRateLabel": "Скорость данных",
+  "deviationLabel": "Девиация",
+  "dataLengthLabel": "Длина данных",
+  "flipperSubGhzFormat": "FlipperZero SubGhz (.sub)",
+  "flipperSubGhzDetails": "• Формат необработанных сигналов\n• Используется Flipper Zero\n• Содержит частоту и параметры модуляции",
+  "tutJsonFormat": "TUT JSON (.json)",
+  "tutJsonDetails": "• Формат JSON с параметрами сигнала\n• Используется TUT (Test & Utility Tool)\n• Содержит частоту, скорость и необработанные данные",
+
+  "sdCardPath": "SD-карта: {path}",
+  "@sdCardPath": { "placeholders": { "path": { "type": "String" } } },
+  "rfScanner": "RF сканер",
+
+  "moreSamples": "+{count} ещё",
+  "@moreSamples": { "placeholders": { "count": { "type": "int" } } },
+  "sampleCount": "{count} сэмплов",
+  "@sampleCount": { "placeholders": { "count": { "type": "int" } } },
+  "transmitHistorySubtitle": "{time} • Модуль {moduleNumber} • {repeatCount} повторов",
+  "@transmitHistorySubtitle": { "placeholders": { "time": { "type": "String" }, "moduleNumber": { "type": "int" }, "repeatCount": { "type": "int" } } },
+  "downloadingFile": "Загрузка файла: {name}",
+  "@downloadingFile": { "placeholders": { "name": { "type": "String" } } },
+  "moduleStatus": "Модуль {number}: {mode}",
+  "@moduleStatus": { "placeholders": { "number": { "type": "int" }, "mode": { "type": "String" } } },
+  "transmittingEllipsis": "Передача...",
+  "chargingIndicator": " ⚡ Зарядка"
+}
+

@@ -1,0 +1,39 @@
+name: evilcrow_rf2_controller
+description: EvilCrow RF — Mobile app for controlling RF devices via BLE
+publish_to: 'none'
+version: 1.0.0+13
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  flutter_blue_plus: ^1.36.8
+  permission_handler: ^12.0.1
+  provider: ^6.1.2
+  shared_preferences: ^2.5.4
+  file_picker: ^10.3.10
+  path_provider: ^2.1.1
+  intl: any
+  google_fonts: ^6.1.0
+  url_launcher: ^6.2.5
+  http: ^1.2.1
+  crypto: ^3.0.3
+  wakelock_plus: ^1.2.8
+  package_info_plus: ^8.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+  generate: true
+

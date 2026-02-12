@@ -1,0 +1,65 @@
+workflows:
+  ios-workflow:
+    name: iOS Workflow
+    environment:
+      xcode: latest
+      cocoapods: default
+      vars:
+        XCODE_PROJECT: "ios/Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
+        PACKAGE_NAME: "com.evilcrow.rf2controller"
+    scripts:
+      - name: Set up code signing settings
+        script: |
+          keychain_name="codemagic.keychain"
+          keychain_password="temp"
+          # Create temporary keychain
+          security create-keychain -p "$keychain_password" "$keychain_name"
+          security list-keychains -s "$keychain_name"
+          security default-keychain -s "$keychain_name"
+          security unlock-keychain -p "$keychain_name" "$keychain_name"
+          security set-keychain-settings -t 3600 -l "$keychain_name"
+          
+          # Import certificates
+          security import "$CM_BUILD_DIR/certificates/distribution.p12" -k "$keychain_name" -P "$CM_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security import "$CM_BUILD_DIR/certificates/development.p12" -k "$keychain_name" -P "$CM_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          
+          # Update provisioning profiles
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp "$CM_BUILD_DIR/profiles/ios_distribution.mobileprovision" ~/Library/MobileDevice/Provisioning\ Profiles/
+          cp "$CM_BUILD_DIR/profiles/ios_development.mobileprovision" ~/Library/MobileDevice/Provisioning\ Profiles/
+          
+          # Set up code signing identity
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$keychain_name" "$keychain_name"
+      - name: Get Flutter packages
+        script: flutter pub get
+      - name: Build iOS app
+        script: |
+          flutter build ios \
+            --release \
+            --no-codesign \
+            --build-number=$CM_BUILD_NUMBER
+      - name: Code sign iOS app
+        script: |
+          cd ios
+          xcodebuild -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -destination generic/platform=iOS \
+            -archivePath build/Runner.xcarchive \
+            clean archive
+          xcodebuild -exportArchive \
+            -archivePath build/Runner.xcarchive \
+            -exportPath build/ios \
+            -exportOptionsPlist exportOptions.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+    publishing:
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        submit_to_testflight: true
+
