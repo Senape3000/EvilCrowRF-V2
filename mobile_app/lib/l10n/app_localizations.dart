@@ -2654,6 +2654,12 @@ abstract class AppLocalizations {
   /// **'RF Settings'**
   String get rfSettings;
 
+  /// No description provided for @rfSettingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bruteforce, Radio & Scanner settings'**
+  String get rfSettingsSubtitle;
+
   /// No description provided for @syncedWithDevice.
   ///
   /// In en, this message translates to:

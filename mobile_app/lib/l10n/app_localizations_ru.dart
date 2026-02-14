@@ -1500,6 +1500,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get rfSettings => 'Настройки RF';
 
   @override
+  String get rfSettingsSubtitle => 'Брутфорс, радио и сканер';
+
+  @override
   String get syncedWithDevice => 'Синхронизировано с устройством';
 
   @override

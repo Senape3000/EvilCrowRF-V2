@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +28,15 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   /// True after we sync HW button config from device once.
   bool _hwConfigSynced = false;
+
+  /// Debounce timer for nRF slider auto-send.
+  Timer? _nrfDebounceTimer;
+
+  @override
+  void dispose() {
+    _nrfDebounceTimer?.cancel();
+    super.dispose();
+  }
 
   /// Navigates to DebugScreen on single tap.
   void _onDebugTap(BuildContext context) {
@@ -615,11 +625,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           subtitle: Text(
-            bleProvider.settingsSynced ? AppLocalizations.of(context)!.syncedWithDevice : AppLocalizations.of(context)!.localOnly,
-            style: TextStyle(
-              color: bleProvider.settingsSynced
-                  ? AppColors.success
-                  : AppColors.secondaryText,
+            AppLocalizations.of(context)!.rfSettingsSubtitle,
+            style: const TextStyle(
+              color: AppColors.secondaryText,
               fontSize: 12,
             ),
           ),
@@ -1178,7 +1186,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           return ChoiceChip(
                             label: Text(_nrfPaLabel(lvl)),
                             selected: isSelected,
-                            onSelected: (_) => settingsProvider.setNrfPaLevel(lvl),
+                            onSelected: (_) {
+                              settingsProvider.setNrfPaLevel(lvl);
+                              _sendNrfSettings(context, bleProvider, settingsProvider);
+                            },
                             selectedColor: const Color(0xFF00BCD4).withValues(alpha: 0.2),
                             labelStyle: TextStyle(
                               color: isSelected ? const Color(0xFF00BCD4) : AppColors.secondaryText,
@@ -1220,7 +1231,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           return ChoiceChip(
                             label: Text(_nrfDataRateLabel(dr)),
                             selected: isSelected,
-                            onSelected: (_) => settingsProvider.setNrfDataRate(dr),
+                            onSelected: (_) {
+                              settingsProvider.setNrfDataRate(dr);
+                              _sendNrfSettings(context, bleProvider, settingsProvider);
+                            },
                             selectedColor: const Color(0xFF00BCD4).withValues(alpha: 0.2),
                             labelStyle: TextStyle(
                               color: isSelected ? const Color(0xFF00BCD4) : AppColors.secondaryText,
@@ -1271,6 +1285,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         activeColor: const Color(0xFF00BCD4),
                         onChanged: (value) {
                           settingsProvider.setNrfChannel(value.round());
+                          _debouncedSendNrfSettings(context, bleProvider, settingsProvider);
                         },
                       ),
 
@@ -1313,38 +1328,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         activeColor: const Color(0xFF00BCD4),
                         onChanged: (value) {
                           settingsProvider.setNrfAutoRetransmit(value.round());
+                          _debouncedSendNrfSettings(context, bleProvider, settingsProvider);
                         },
                       ),
-
-                      const SizedBox(height: 12),
-
-                      // Send to device button
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: bleProvider.isConnected
-                              ? () => _sendNrfSettings(context, bleProvider, settingsProvider)
-                              : null,
-                          icon: const Icon(Icons.send),
-                          label: Text(AppLocalizations.of(context)!.sendToDevice),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF00BCD4),
-                            foregroundColor: AppColors.primaryBackground,
-                            disabledBackgroundColor:
-                                const Color(0xFF00BCD4).withValues(alpha: 0.3),
-                            disabledForegroundColor: AppColors.disabledText,
-                          ),
-                        ),
-                      ),
-                      if (!bleProvider.isConnected)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Text(
-                            AppLocalizations.of(context)!.connectToDeviceToApply,
-                            style: const TextStyle(
-                                color: AppColors.secondaryText, fontSize: 11),
-                          ),
-                        ),
                     ],
                   ),
                 );
@@ -1375,8 +1361,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  /// Debounced auto-send for nRF slider changes (500ms).
+  void _debouncedSendNrfSettings(BuildContext context, BleProvider bleProvider,
+      SettingsProvider settingsProvider) {
+    _nrfDebounceTimer?.cancel();
+    _nrfDebounceTimer = Timer(const Duration(milliseconds: 500), () {
+      _sendNrfSettings(context, bleProvider, settingsProvider);
+    });
+  }
+
   void _sendNrfSettings(BuildContext context, BleProvider bleProvider,
       SettingsProvider settingsProvider) async {
+    if (!bleProvider.isConnected) return;
     try {
       // Send NRF settings as a settings sync command
       // Using MSG_SETTINGS_UPDATE (0xC1) with extended NRF payload
@@ -2230,9 +2226,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         action: settingsProvider.button1Action,
                         color: AppColors.primaryAccent,
                         replayPath: settingsProvider.button1ReplayPath,
-                        onPickReplayFile: () => _pickReplaySubFile(context, settingsProvider, 1),
+                        onPickReplayFile: () async {
+                          await _pickReplaySubFile(context, settingsProvider, 1);
+                          _sendButtonConfig(context, bleProvider, settingsProvider);
+                        },
                         onChanged: (action) {
                           settingsProvider.setButton1Action(action);
+                          _sendButtonConfig(context, bleProvider, settingsProvider);
                         },
                       ),
 
@@ -2244,42 +2244,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         action: settingsProvider.button2Action,
                         color: AppColors.warning,
                         replayPath: settingsProvider.button2ReplayPath,
-                        onPickReplayFile: () => _pickReplaySubFile(context, settingsProvider, 2),
+                        onPickReplayFile: () async {
+                          await _pickReplaySubFile(context, settingsProvider, 2);
+                          _sendButtonConfig(context, bleProvider, settingsProvider);
+                        },
                         onChanged: (action) {
                           settingsProvider.setButton2Action(action);
+                          _sendButtonConfig(context, bleProvider, settingsProvider);
                         },
                       ),
-
-                      const SizedBox(height: 16),
-
-                      // Send to device button
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: bleProvider.isConnected
-                              ? () => _sendButtonConfig(
-                                  context, bleProvider, settingsProvider)
-                              : null,
-                          icon: const Icon(Icons.send),
-                          label: Text(AppLocalizations.of(context)!.sendToDevice),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.info,
-                            foregroundColor: AppColors.primaryBackground,
-                            disabledBackgroundColor:
-                                AppColors.info.withValues(alpha: 0.3),
-                            disabledForegroundColor: AppColors.disabledText,
-                          ),
-                        ),
-                      ),
-                      if (!bleProvider.isConnected)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Text(
-                            AppLocalizations.of(context)!.connectToDeviceToApply,
-                            style: const TextStyle(
-                                color: AppColors.secondaryText, fontSize: 11),
-                          ),
-                        ),
                     ],
                   ),
                 );
@@ -2367,7 +2340,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Text(
                   replayPath == null || replayPath.isEmpty
                       ? 'No .sub file selected'
-                      : replayPath,
+                      : replayPath.split('/').last,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(color: AppColors.secondaryText, fontSize: 11),

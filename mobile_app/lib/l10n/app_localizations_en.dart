@@ -1493,6 +1493,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rfSettings => 'RF Settings';
 
   @override
+  String get rfSettingsSubtitle => 'Bruteforce, Radio & Scanner settings';
+
+  @override
   String get syncedWithDevice => 'Synced with device';
 
   @override

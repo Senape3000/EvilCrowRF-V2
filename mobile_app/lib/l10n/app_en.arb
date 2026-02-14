@@ -1054,6 +1054,7 @@
   "appSettings": "App Settings",
   "appSettingsSubtitle": "Language, cache, permissions",
   "rfSettings": "RF Settings",
+  "rfSettingsSubtitle": "Bruteforce, Radio & Scanner settings",
   "syncedWithDevice": "Synced with device",
   "localOnly": "Local only",
   "bruteforceSettings": "Bruteforce Settings",

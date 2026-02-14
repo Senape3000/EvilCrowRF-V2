@@ -59,7 +59,7 @@ class WaterfallWidget extends StatelessWidget {
         border: Border.all(
           color: isLive
               ? AppColors.success.withValues(alpha: 0.6)
-              : AppColors.border.withValues(alpha: 0.3),
+              : AppColors.borderDefault.withValues(alpha: 0.3),
         ),
       ),
       child: ClipRRect(

@@ -1040,6 +1040,7 @@
   "appSettings": "Настройки приложения",
   "appSettingsSubtitle": "Язык, кэш, разрешения",
   "rfSettings": "Настройки RF",
+  "rfSettingsSubtitle": "Брутфорс, радио и сканер",
   "syncedWithDevice": "Синхронизировано с устройством",
   "localOnly": "Только локально",
   "bruteforceSettings": "Настройки брутфорса",
