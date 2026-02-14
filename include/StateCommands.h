@@ -10,6 +10,12 @@
 #include "ConfigManager.h"
 #include "BinaryMessages.h"
 #include "core/ble/ClientsManager.h"
+#include <SD.h>
+
+#if NRF_MODULE_ENABLED
+#include "modules/nrf/NrfModule.h"
+#include "modules/nrf/NrfJammer.h"
+#endif
 
 #if BATTERY_MODULE_ENABLED
 #include "modules/battery/BatteryModule.h"
@@ -56,6 +62,15 @@ private:
             BatteryModule::sendBatteryStatus();
         }
 #endif
+
+        // Send HW button config so the app can sync button states
+        sendHwButtonStatus();
+
+        // Send SD card storage info
+        sendSdStatus();
+
+        // Send nRF24 module status
+        sendNrfStatus();
         
         return true;
     }
@@ -245,6 +260,66 @@ private:
     // Check module existence
     static bool moduleExists(uint8_t module) {
         return module < CC1101_NUM_MODULES;
+    }
+
+    // Send HW button configuration to all BLE clients.
+    // Allows app to sync button states on connect.
+    static void sendHwButtonStatus() {
+        BinaryHwButtonStatus status;
+        status.btn1Action   = ConfigManager::settings.button1Action;
+        status.btn2Action   = ConfigManager::settings.button2Action;
+        status.btn1PathType = ConfigManager::settings.button1SignalPathType;
+        status.btn2PathType = ConfigManager::settings.button2SignalPathType;
+        ClientsManager::getInstance().notifyAllBinary(
+            NotificationType::SettingsSync,
+            reinterpret_cast<const uint8_t*>(&status), sizeof(status));
+        ESP_LOGI("StateCommands", "HwButtonStatus sent: btn1=%d btn2=%d",
+                 status.btn1Action, status.btn2Action);
+    }
+
+    // Send SD card storage info to all BLE clients.
+    static void sendSdStatus() {
+        BinarySdStatus status;
+        uint64_t totalBytes = SD.totalBytes();
+        uint64_t usedBytes  = SD.usedBytes();
+        if (totalBytes > 0) {
+            status.mounted = 1;
+            status.totalMB = (uint16_t)(totalBytes / (1024ULL * 1024ULL));
+            status.freeMB  = (uint16_t)((totalBytes - usedBytes) / (1024ULL * 1024ULL));
+        } else {
+            status.mounted = 0;
+            status.totalMB = 0;
+            status.freeMB  = 0;
+        }
+        ClientsManager::getInstance().notifyAllBinary(
+            NotificationType::State,
+            reinterpret_cast<const uint8_t*>(&status), sizeof(status));
+        ESP_LOGI("StateCommands", "SdStatus sent: mounted=%d total=%dMB free=%dMB",
+                 status.mounted, status.totalMB, status.freeMB);
+    }
+
+    // Send nRF24 module status to all BLE clients.
+    static void sendNrfStatus() {
+        BinaryNrfStatus status;
+#if NRF_MODULE_ENABLED
+        status.present     = NrfModule::isPresent() ? 1 : 0;
+        status.initialized = NrfModule::isInitialized() ? 1 : 0;
+        // Determine active state: 0=idle, 1=jamming, 2=scanning, 3=attacking, 4=spectrum
+        if (NrfJammer::isRunning()) {
+            status.activeState = 1;  // Jamming
+        } else {
+            status.activeState = 0;  // Idle (scan/attack states set elsewhere)
+        }
+#else
+        status.present     = 0;
+        status.initialized = 0;
+        status.activeState = 0;
+#endif
+        ClientsManager::getInstance().notifyAllBinary(
+            NotificationType::State,
+            reinterpret_cast<const uint8_t*>(&status), sizeof(status));
+        ESP_LOGI("StateCommands", "NrfStatus sent: present=%d init=%d state=%d",
+                 status.present, status.initialized, status.activeState);
     }
 };
 

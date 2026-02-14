@@ -61,46 +61,33 @@ void NrfSpectrum::getLevels(uint8_t* levels) {
 void NrfSpectrum::scanOnce() {
     // Must be called with SPI mutex held.
     //
-    // The E01-ML01SP2 module has a PA+LNA that amplifies incoming signals
-    // significantly.  The nRF24L01+ RPD register triggers at -64 dBm
-    // referred to the chip input, but the LNA lowers the effective
-    // threshold at the antenna to roughly -90 dBm, which means ambient
-    // 2.4 GHz noise (WiFi, BLE, microwaves) trips RPD on almost every
-    // channel in a single sample.
+    // RPD (Received Power Detector) is a binary flag: 1 = signal above
+    // -64 dBm at the chip input.  With a PA+LNA module (E01-ML01SP2) the
+    // effective antenna threshold drops to roughly -90 dBm.
     //
-    // To produce a useful spectrum display we take multiple RPD samples
-    // per channel and feed the hit-ratio into a slow-rise / fast-decay
-    // EMA so that only channels with persistent strong activity show
-    // high bars.
+    // Fast-decay EMA: (level + rpd * 100) / 2
+    //   - One RPD hit brings the bar to 50, a second to 75, third to 87...
+    //   - Decay: 100 → 50 → 25 → 12 → 6 (drops quickly when signal gone)
+    // This gives a responsive, real-time spectrum display.
 
     NrfModule::ceLow();
-
-    static const int SAMPLES_PER_CH = 3;  // RPD samples per channel
 
     for (int i = 0; i < NRF_SPECTRUM_CHANNELS; i++) {
         NrfModule::setChannel(i);
 
-        int hits = 0;
-        for (int s = 0; s < SAMPLES_PER_CH; s++) {
-            // Restart RX to clear previous RPD latch
-            NrfModule::writeRegister(NRF_REG_CONFIG,
-                NRF_PWR_UP | NRF_PRIM_RX);
-            NrfModule::ceHigh();
-            delayMicroseconds(170);  // 130 µs RX settle + 40 µs sample
-            NrfModule::ceLow();
+        // Enter RX mode briefly to trigger RPD sampling
+        NrfModule::writeRegister(NRF_REG_CONFIG,
+            NRF_PWR_UP | NRF_PRIM_RX);
+        NrfModule::ceHigh();
+        delayMicroseconds(170);  // ~170µs: 130µs RX settle + 40µs RPD sample window
+        NrfModule::ceLow();
 
-            if (NrfModule::testRPD()) hits++;
-        }
+        // Read RPD: 1 = signal above -64dBm detected during RX
+        int rpd = NrfModule::testRPD() ? 1 : 0;
 
-        // Convert hit count to a 0-100 "strength" value.
-        // Only channels that trigger RPD on ALL samples get full score.
-        int rpd_pct = (hits * 100) / SAMPLES_PER_CH;
-
-        // Asymmetric EMA: slow rise (7/8) keeps noise floor low,
-        // moderate decay lets real signals stand out.
-        //  Rise to 90 %: ~18 consecutive full-score sweeps  (~1.4 s)
-        //  Decay from 100→0: ~30 sweeps  (~2.3 s)
-        channelLevels_[i] = (uint8_t)((channelLevels_[i] * 7 + rpd_pct) / 8);
+        // Fast-decay EMA: (level + rpd * 100) / 2
+        // Decay ratio ~50% per sweep — bars drop in 3-4 sweeps.
+        channelLevels_[i] = (uint8_t)((channelLevels_[i] + rpd * 100) / 2);
     }
 }
 
@@ -121,21 +108,23 @@ void NrfSpectrum::spectrumTask(void* param) {
 
         // Configure radio for wideband spectrum sensing
         NrfModule::writeRegister(NRF_REG_EN_AA, 0x00);    // No auto-ack
-        NrfModule::writeRegister(NRF_REG_SETUP_AW, 0x01); // 3-byte address (minimum valid)
+        NrfModule::writeRegister(NRF_REG_SETUP_AW, 0x00); // 2-byte address (promiscuous)
         NrfModule::setDataRate(NRF_1MBPS);
 
         // Open 6 reading pipes at noise-detection addresses exactly like
         // the BRUCE reference firmware. More pipes = higher sensitivity
         // because the radio checks all pipe addresses in parallel.
-        const uint8_t noiseAddr0[] = {0x55, 0x55, 0x55};
-        const uint8_t noiseAddr1[] = {0xAA, 0xAA, 0xAA};
-        NrfModule::writeRegister(NRF_REG_RX_ADDR_P0, noiseAddr0, 3);
-        NrfModule::writeRegister(NRF_REG_RX_ADDR_P1, noiseAddr1, 3);
+        const uint8_t noiseAddr[][2] = {
+            {0x55, 0x55}, {0xAA, 0xAA}, {0xA0, 0xAA},
+            {0xAB, 0xAA}, {0xAC, 0xAA}, {0xAD, 0xAA}
+        };
+        NrfModule::writeRegister(NRF_REG_RX_ADDR_P0, noiseAddr[0], 2);
+        NrfModule::writeRegister(NRF_REG_RX_ADDR_P1, noiseAddr[1], 2);
         // Pipes 2-5 share address bytes [1..N] with pipe 1, only byte 0 differs
-        NrfModule::writeRegister(0x0C, 0xA0); // RX_ADDR_P2
-        NrfModule::writeRegister(0x0D, 0xAB); // RX_ADDR_P3
-        NrfModule::writeRegister(0x0E, 0xAC); // RX_ADDR_P4
-        NrfModule::writeRegister(0x0F, 0xAD); // RX_ADDR_P5
+        NrfModule::writeRegister(0x0C, noiseAddr[2][0]); // RX_ADDR_P2
+        NrfModule::writeRegister(0x0D, noiseAddr[3][0]); // RX_ADDR_P3
+        NrfModule::writeRegister(0x0E, noiseAddr[4][0]); // RX_ADDR_P4
+        NrfModule::writeRegister(0x0F, noiseAddr[5][0]); // RX_ADDR_P5
         NrfModule::writeRegister(NRF_REG_EN_RXADDR, 0x3F); // Enable all 6 pipes
 
         // Perform one full sweep

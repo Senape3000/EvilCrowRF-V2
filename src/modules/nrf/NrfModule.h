@@ -135,6 +135,16 @@ public:
      */
     static void writeFast(const void* buf, uint8_t len);
 
+    /**
+     * Write payload to TX FIFO without pulsing CE.
+     * Used for continuous flooding: caller holds CE HIGH and
+     * feeds payloads as FIFO empties (back-to-back TX, no gap).
+     * Check TX_FULL bit (STATUS bit 0) before calling.
+     * @param buf  Payload data.
+     * @param len  Payload length (max 32).
+     */
+    static void writePayload(const void* buf, uint8_t len);
+
     /// Set fixed payload size (1-32 bytes).
     static void setPayloadSize(uint8_t size);
 

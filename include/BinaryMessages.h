@@ -71,6 +71,15 @@ enum BinaryMessageType : uint8_t {
 
     // Device identity
     MSG_DEVICE_NAME   = 0xC7, // Current BLE device name: [nameLen:1][name...]
+
+    // HW button config sync (sent on GetState)
+    MSG_HW_BUTTON_STATUS = 0xC8, // [btn1Action:1][btn2Action:1][btn1PathType:1][btn2PathType:1]
+
+    // SD card storage info (sent on GetState)
+    MSG_SD_STATUS     = 0xC9, // [mounted:1][totalMB:2LE][freeMB:2LE]
+
+    // nRF24 module status (sent on GetState)
+    MSG_NRF_STATUS    = 0xCA, // [present:1][initialized:1][activeState:1]
 };
 
 // Mode switch notification (4 bytes)
@@ -274,6 +283,37 @@ struct BinarySdrRawDataHeader {
     uint16_t seqNum;       // Sequence number for ordering
     uint8_t  dataLen;      // Number of data bytes following
     // uint8_t data[];      // Variable: raw demodulated bytes from CC1101 FIFO
+};
+
+// HW button status (5 bytes)
+// Sent on BLE connect (GetState) to sync app with current button config.
+// [0xC8][btn1Action:1][btn2Action:1][btn1PathType:1][btn2PathType:1]
+struct BinaryHwButtonStatus {
+    uint8_t messageType = MSG_HW_BUTTON_STATUS;
+    uint8_t btn1Action;      // HwButtonAction enum index (0-6)
+    uint8_t btn2Action;      // HwButtonAction enum index (0-6)
+    uint8_t btn1PathType;    // Path type for replay (0-5)
+    uint8_t btn2PathType;    // Path type for replay (0-5)
+};
+
+// SD card status (6 bytes)
+// Sent on BLE connect (GetState) to show storage info in app.
+// [0xC9][mounted:1][totalMB:2LE][freeMB:2LE]
+struct BinarySdStatus {
+    uint8_t  messageType = MSG_SD_STATUS;
+    uint8_t  mounted;      // 0 = not mounted, 1 = mounted
+    uint16_t totalMB;      // Total size in MB
+    uint16_t freeMB;       // Free space in MB
+};
+
+// nRF24 module status (4 bytes)
+// Sent on BLE connect (GetState) to show nRF24 state in Device Status.
+// [0xCA][present:1][initialized:1][activeState:1]
+struct BinaryNrfStatus {
+    uint8_t messageType = MSG_NRF_STATUS;
+    uint8_t present;       // 0 = not present, 1 = present
+    uint8_t initialized;   // 0 = not initialized, 1 = initialized
+    uint8_t activeState;   // 0=idle, 1=jamming, 2=scanning, 3=attacking, 4=spectrum
 };
 
 #pragma pack(pop)

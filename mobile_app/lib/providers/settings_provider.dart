@@ -174,4 +174,44 @@ class SettingsProvider with ChangeNotifier {
     await prefs.setInt('nrfAutoRetransmit', _nrfAutoRetransmit);
     notifyListeners();
   }
+
+  /// Sync HW button config received from the device (0xC8 message).
+  /// Updates local settings to reflect what the firmware actually has.
+  Future<void> syncButtonsFromDevice({
+    required int btn1Action,
+    required int btn2Action,
+    int btn1PathType = 0,
+    int btn2PathType = 0,
+  }) async {
+    final b1 = HwButtonAction.values[
+        btn1Action.clamp(0, HwButtonAction.values.length - 1)];
+    final b2 = HwButtonAction.values[
+        btn2Action.clamp(0, HwButtonAction.values.length - 1)];
+    bool changed = false;
+    if (_button1Action != b1) {
+      _button1Action = b1;
+      changed = true;
+    }
+    if (_button2Action != b2) {
+      _button2Action = b2;
+      changed = true;
+    }
+    if (_button1ReplayPathType != btn1PathType) {
+      _button1ReplayPathType = btn1PathType;
+      changed = true;
+    }
+    if (_button2ReplayPathType != btn2PathType) {
+      _button2ReplayPathType = btn2PathType;
+      changed = true;
+    }
+    if (changed) {
+      // Persist new values
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('hwButton1Action', _button1Action.index);
+      await prefs.setInt('hwButton2Action', _button2Action.index);
+      await prefs.setInt('hwButton1ReplayPathType', _button1ReplayPathType);
+      await prefs.setInt('hwButton2ReplayPathType', _button2ReplayPathType);
+      notifyListeners();
+    }
+  }
 }

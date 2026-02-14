@@ -155,6 +155,21 @@ class BleProvider extends ChangeNotifier {
   double sdrFrequencyMHz = 433.92;
   int sdrModulation = 2; // ASK/OOK default
 
+  // ── SD card storage info (populated by 0xC9 on GetState) ──
+  bool sdMounted = false;
+  int sdTotalMB = 0;
+  int sdFreeMB = 0;
+
+  // ── nRF24 hardware status (populated by 0xCA on GetState) ──
+  bool nrfPresent = false;
+
+  // ── HW button config from device (populated by 0xC8 on GetState) ──
+  // -1 = not yet received from device
+  int deviceBtn1Action = -1;
+  int deviceBtn2Action = -1;
+  int deviceBtn1PathType = -1;
+  int deviceBtn2PathType = -1;
+
   // ── OTA state (reactive, used by OtaScreen via Consumer) ──
   int otaProgress = 0;
   int otaBytesWritten = 0;
@@ -1877,6 +1892,15 @@ class BleProvider extends ChangeNotifier {
         case 'BatteryStatus':
           _handleBatteryStatus(data['data']);
           break;
+        case 'HwButtonStatus':
+          _handleHwButtonStatus(data['data']);
+          break;
+        case 'SdStatus':
+          _handleSdStatus(data['data']);
+          break;
+        case 'NrfModuleStatus':
+          _handleNrfModuleStatus(data['data']);
+          break;
         // ── NRF24 notifications ──
         case 'NrfDeviceFound':
           final d = data['data'] as Map?;
@@ -3457,6 +3481,40 @@ class BleProvider extends ChangeNotifier {
     _batteryPercent = data['percentage'] ?? 0;
     _batteryCharging = data['charging'] ?? false;
     _log('info', 'Battery: ${_batteryVoltage}mV ${_batteryPercent}% charging=$_batteryCharging');
+    notifyListeners();
+  }
+
+  /// Handle HW button config (0xC8) — received on GetState.
+  /// Updates local state so the Settings screen can show current button config.
+  void _handleHwButtonStatus(Map<String, dynamic> data) {
+    deviceBtn1Action = data['btn1Action'] ?? 0;
+    deviceBtn2Action = data['btn2Action'] ?? 0;
+    deviceBtn1PathType = data['btn1PathType'] ?? 0;
+    deviceBtn2PathType = data['btn2PathType'] ?? 0;
+    _log('info', 'HwButtonStatus: btn1=$deviceBtn1Action btn2=$deviceBtn2Action');
+    notifyListeners();
+  }
+
+  /// Handle SD card status (0xC9) — received on GetState.
+  void _handleSdStatus(Map<String, dynamic> data) {
+    sdMounted = data['mounted'] ?? false;
+    sdTotalMB = data['totalMB'] ?? 0;
+    sdFreeMB = data['freeMB'] ?? 0;
+    _log('info', 'SdStatus: mounted=$sdMounted total=${sdTotalMB}MB free=${sdFreeMB}MB');
+    notifyListeners();
+  }
+
+  /// Handle nRF24 module status (0xCA) — received on GetState.
+  void _handleNrfModuleStatus(Map<String, dynamic> data) {
+    nrfPresent = data['present'] ?? false;
+    nrfInitialized = data['initialized'] ?? false;
+    // activeState: 0=idle, 1=jamming, 2=scanning, 3=attacking, 4=spectrum
+    int state = data['activeState'] ?? 0;
+    nrfJammerRunning = (state == 1);
+    nrfScanning = (state == 2);
+    nrfAttacking = (state == 3);
+    nrfSpectrumRunning = (state == 4);
+    _log('info', 'NrfModuleStatus: present=$nrfPresent init=$nrfInitialized state=$state');
     notifyListeners();
   }
 

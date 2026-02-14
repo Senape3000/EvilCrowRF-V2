@@ -94,6 +94,15 @@
 #define HID_KEY_LEFT       0x50
 #define HID_KEY_DOWN       0x51
 #define HID_KEY_UP         0x52
+#define HID_KEY_INSERT     0x49
+#define HID_KEY_HOME       0x4A
+#define HID_KEY_PAGEUP     0x4B
+#define HID_KEY_END        0x4D
+#define HID_KEY_PAGEDOWN   0x4E
+#define HID_KEY_PRINTSCR   0x46
+#define HID_KEY_SCROLLLOCK 0x47
+#define HID_KEY_PAUSE      0x48
+#define HID_KEY_MENU       0x65  // Application / Context Menu key
 
 // ── ASCII to HID Conversion ────────────────────────────────────
 // Each entry: { modifier, keycode }
@@ -259,6 +268,17 @@ static const DuckyKeyMapping DUCKY_KEYS[] = {
     {"F10",        HID_MOD_NONE,  HID_KEY_F10},
     {"F11",        HID_MOD_NONE,  HID_KEY_F11},
     {"F12",        HID_MOD_NONE,  HID_KEY_F12},
+    {"INSERT",     HID_MOD_NONE,  HID_KEY_INSERT},
+    {"HOME",       HID_MOD_NONE,  HID_KEY_HOME},
+    {"END",        HID_MOD_NONE,  HID_KEY_END},
+    {"PAGEUP",     HID_MOD_NONE,  HID_KEY_PAGEUP},
+    {"PAGEDOWN",   HID_MOD_NONE,  HID_KEY_PAGEDOWN},
+    {"PRINTSCREEN",HID_MOD_NONE,  HID_KEY_PRINTSCR},
+    {"SCROLLLOCK", HID_MOD_NONE,  HID_KEY_SCROLLLOCK},
+    {"PAUSE",      HID_MOD_NONE,  HID_KEY_PAUSE},
+    {"BREAK",      HID_MOD_NONE,  HID_KEY_PAUSE},
+    {"MENU",       HID_MOD_NONE,  HID_KEY_MENU},
+    {"APP",        HID_MOD_NONE,  HID_KEY_MENU},
     // Modifiers as standalone keys (for DuckyScript "GUI r" etc.)
     {"GUI",        HID_MOD_LGUI,  HID_KEY_NONE},
     {"WINDOWS",    HID_MOD_LGUI,  HID_KEY_NONE},

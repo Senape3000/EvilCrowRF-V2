@@ -100,6 +100,13 @@ public:
     // ── State ───────────────────────────────────────────────────
     static MjState getState() { return state_; }
     static bool isRunning() { return state_ == MJ_SCANNING || state_ == MJ_ATTACKING; }
+    /// Expose stop flag for internal helper functions (typeString, sendKeystroke).
+    static bool getStopRequest() { return stopRequest_; }
+
+    // ── Protocol TX (public so file-scope helpers can call them) ─
+    static void msTransmit(const MjTarget& target, uint8_t meta, uint8_t hid);
+    static void logTransmit(const MjTarget& target, uint8_t meta,
+                            const uint8_t* keys, uint8_t keysLen);
 
 private:
     static MjState   state_;
@@ -124,14 +131,9 @@ private:
     // ── Internal attack logic ───────────────────────────────────
     static void attackTask(void* param);
 
-    // Microsoft protocol
-    static void msTransmit(const MjTarget& target, uint8_t meta, uint8_t hid);
+    // Microsoft protocol helpers
     static void msCrypt(uint8_t* payload, uint8_t size, const uint8_t* addr);
     static void msChecksum(uint8_t* payload, uint8_t size);
-
-    // Logitech protocol
-    static void logTransmit(const MjTarget& target, uint8_t meta,
-                            const uint8_t* keys, uint8_t keysLen);
 
     // DuckyScript parser
     static bool parseDuckyLine(const String& line, uint8_t targetIndex);

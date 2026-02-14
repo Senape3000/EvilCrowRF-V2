@@ -42,6 +42,10 @@ enum BinaryMessageType {
   otaError(0xE2),           // OTA error
   // Device identity
   deviceName(0xC7),         // BLE device name from device
+  // Device status extensions (sent on connect / GetState)
+  hwButtonStatus(0xC8),     // HW button config sync
+  sdStatus(0xC9),           // SD card storage info
+  nrfModuleStatus(0xCA),    // nRF24 module presence/state
   error(0xF0),
   lowMemory(0xF1),
   commandSuccess(0xF2),
@@ -1023,6 +1027,43 @@ class BinaryMessageParser {
             'type': 'DeviceName',
             'data': {
               'name': devName,
+            },
+          };
+
+        case BinaryMessageType.hwButtonStatus:
+          // [0xC8][btn1Action:1][btn2Action:1][btn1PathType:1][btn2PathType:1] = 5 bytes
+          if (data.length < 5) return null;
+          return {
+            'type': 'HwButtonStatus',
+            'data': {
+              'btn1Action': data[1],
+              'btn2Action': data[2],
+              'btn1PathType': data[3],
+              'btn2PathType': data[4],
+            },
+          };
+
+        case BinaryMessageType.sdStatus:
+          // [0xC9][mounted:1][totalMB:2LE][freeMB:2LE] = 6 bytes
+          if (data.length < 6) return null;
+          return {
+            'type': 'SdStatus',
+            'data': {
+              'mounted': data[1] != 0,
+              'totalMB': data[2] | (data[3] << 8),
+              'freeMB': data[4] | (data[5] << 8),
+            },
+          };
+
+        case BinaryMessageType.nrfModuleStatus:
+          // [0xCA][present:1][initialized:1][activeState:1] = 4 bytes
+          if (data.length < 4) return null;
+          return {
+            'type': 'NrfModuleStatus',
+            'data': {
+              'present': data[1] != 0,
+              'initialized': data[2] != 0,
+              'activeState': data[3],
             },
           };
 

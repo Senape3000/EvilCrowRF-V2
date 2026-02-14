@@ -7,11 +7,31 @@ import '../theme/app_colors.dart';
 class ModuleStatusWidget extends StatelessWidget {
   final List<Map<String, dynamic>> cc1101Modules;
   final Map<String, dynamic>? deviceInfo;
+  // nRF24 status
+  final bool nrfPresent;
+  final bool nrfInitialized;
+  final bool nrfJammerRunning;
+  final bool nrfScanning;
+  final bool nrfAttacking;
+  final bool nrfSpectrumRunning;
+  // SD card status
+  final bool sdMounted;
+  final int sdTotalMB;
+  final int sdFreeMB;
 
   const ModuleStatusWidget({
     super.key,
     required this.cc1101Modules,
     this.deviceInfo,
+    this.nrfPresent = false,
+    this.nrfInitialized = false,
+    this.nrfJammerRunning = false,
+    this.nrfScanning = false,
+    this.nrfAttacking = false,
+    this.nrfSpectrumRunning = false,
+    this.sdMounted = false,
+    this.sdTotalMB = 0,
+    this.sdFreeMB = 0,
   });
 
   @override
@@ -33,6 +53,12 @@ class ModuleStatusWidget extends StatelessWidget {
               final module = entry.value;
               return _buildModuleCard(context, index, module);
             }),
+
+            // nRF24 module status
+            _buildNrfCard(context),
+
+            // SD card status
+            _buildSdCard(context),
           ],
         ),
       ),
@@ -340,5 +366,154 @@ class ModuleStatusWidget extends StatelessWidget {
 
   Color _getModeColor(BuildContext context, String mode) {
     return AppColors.getModuleStatusColor(mode);
+  }
+
+  // ── nRF24 module status card ──────────────────────────────────
+
+  Widget _buildNrfCard(BuildContext context) {
+    // Determine nRF state string and color
+    String stateStr;
+    Color stateColor;
+    if (!nrfPresent) {
+      stateStr = 'Not Present';
+      stateColor = AppColors.disabledText;
+    } else if (!nrfInitialized) {
+      stateStr = 'Not Initialized';
+      stateColor = AppColors.warning;
+    } else if (nrfJammerRunning) {
+      stateStr = 'Jamming';
+      stateColor = AppColors.error;
+    } else if (nrfScanning) {
+      stateStr = 'Scanning';
+      stateColor = AppColors.info;
+    } else if (nrfAttacking) {
+      stateStr = 'Attacking';
+      stateColor = const Color(0xFFFF9100);
+    } else if (nrfSpectrumRunning) {
+      stateStr = 'Spectrum';
+      stateColor = AppColors.info;
+    } else {
+      stateStr = 'Idle';
+      stateColor = AppColors.success;
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.router,
+            size: 18,
+            color: stateColor,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'nRF24L01+',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: AppColors.primaryText,
+            ),
+          ),
+          const Spacer(),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: stateColor.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              stateStr,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w500,
+                color: stateColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── SD card status card ───────────────────────────────────────
+
+  Widget _buildSdCard(BuildContext context) {
+    final Color iconColor;
+    final String statusText;
+
+    if (!sdMounted) {
+      iconColor = AppColors.disabledText;
+      statusText = 'Not Inserted';
+    } else {
+      iconColor = AppColors.success;
+      statusText = '${sdFreeMB} MB free / ${sdTotalMB} MB';
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.sd_card,
+            size: 18,
+            color: iconColor,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'SD Card',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: AppColors.primaryText,
+            ),
+          ),
+          const Spacer(),
+          if (sdMounted && sdTotalMB > 0) ...[
+            // Progress bar showing used space
+            SizedBox(
+              width: 60,
+              height: 6,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(3),
+                child: LinearProgressIndicator(
+                  value: sdTotalMB > 0 ? (sdTotalMB - sdFreeMB) / sdTotalMB : 0,
+                  backgroundColor: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    sdFreeMB < (sdTotalMB * 0.1) ? AppColors.error : AppColors.info,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+          ],
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              statusText,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w500,
+                color: iconColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

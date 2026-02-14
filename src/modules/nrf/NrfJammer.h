@@ -55,9 +55,9 @@ struct NrfHopperConfig {
 struct NrfJamModeConfig {
     uint8_t  paLevel;       // 0-3 (0=MIN -18dBm, 3=MAX 0dBm → +20dBm with PA)
     uint8_t  dataRate;      // 0=1Mbps, 1=2Mbps, 2=250Kbps
-    uint16_t dwellTimeMs;   // Time on each channel in ms (1-200)
+    uint16_t dwellTimeMs;   // Time on each channel in ms (0-200, 0=turbo/no delay)
     uint8_t  useFlooding;   // 0=Constant Carrier (CW), 1=Data Flooding
-    uint8_t  floodBursts;   // Number of flood packets per channel hop (1-10)
+    uint8_t  floodBursts;   // Number of flood packets per channel hop (1-20)
 };
 
 /// Static info about a jammer mode (compiled into flash)
@@ -164,6 +164,16 @@ private:
 
     /// Apply the current mode's RF settings to the NRF hardware.
     static void applyModeConfig(NrfJamMode mode, bool flooding);
+
+    /// Continuous flood one channel for the given dwell time.
+    /// Holds CE HIGH and feeds TX FIFO for back-to-back packet TX.
+    /// When dwellMs=0, sends a single burst (3 FIFO packets) and hops.
+    static void floodOnChannel(uint8_t channel, uint16_t dwellMs);
+
+    /// CW (constant carrier) hop helper: stays on channel for dwellMs.
+    /// Uses delayMicroseconds for sub-ms precision instead of vTaskDelay.
+    /// When dwellMs=0, hops immediately (SPI overhead only ~20µs).
+    static void cwOnChannel(uint8_t channel, uint16_t dwellMs);
 
     /// Populate modeConfigs_ with optimal defaults per mode.
     static void setDefaults();

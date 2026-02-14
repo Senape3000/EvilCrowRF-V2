@@ -23,6 +23,9 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  /// True after we sync HW button config from device once.
+  bool _hwConfigSynced = false;
+
   /// Navigates to DebugScreen on single tap.
   void _onDebugTap(BuildContext context) {
     final settingsProvider =
@@ -1795,6 +1798,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const Divider(color: AppColors.divider, height: 1),
             Consumer<SettingsProvider>(
               builder: (context, settingsProvider, child) {
+                // Reset sync flag on disconnect so we re-sync next time
+                if (_hwConfigSynced && !bleProvider.isConnected) {
+                  _hwConfigSynced = false;
+                }
+                // Sync HW button config from device once, when 0xC8 arrives
+                if (!_hwConfigSynced && bleProvider.deviceBtn1Action >= 0) {
+                  _hwConfigSynced = true;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    settingsProvider.syncButtonsFromDevice(
+                      btn1Action: bleProvider.deviceBtn1Action,
+                      btn2Action: bleProvider.deviceBtn2Action,
+                      btn1PathType: bleProvider.deviceBtn1PathType,
+                      btn2PathType: bleProvider.deviceBtn2PathType,
+                    );
+                  });
+                }
                 return Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(

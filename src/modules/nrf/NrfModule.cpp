@@ -149,12 +149,12 @@ void NrfModule::releaseSpi() {
     // Deselect NRF chip select
     digitalWrite(NRF_CSN, HIGH);
 
-    // NOTE: Do NOT call hspi_->end() here!
-    // That destroys the entire HSPI peripheral, which is shared with CC1101.
-    // The CC1101 CCSPI object re-calls begin() with its own pins on next use,
-    // but between the end() and that re-init there's a window where SPI is
-    // dead.  Simply deselecting CSN and releasing the mutex is sufficient —
-    // the CC1101 driver will reconfigure the bus on its next transaction.
+    // End our SPI bus usage so CC1101 can re-initialize cleanly.
+    // Without end(), subsequent begin() calls inside acquireSpi() become
+    // no-ops (ESP32 Arduino SPI checks _spi handle), which means the bus
+    // pins are never reconfigured after CC1101 use — causing silent
+    // communication failures on the next NRF acquire cycle.
+    hspi_->end();
 
     SemaphoreHandle_t mutex = ModuleCc1101::getSpiSemaphore();
     xSemaphoreGive(mutex);
@@ -385,21 +385,9 @@ bool NrfModule::transmit(const uint8_t* buf, uint8_t len) {
 void NrfModule::writeFast(const void* buf, uint8_t len) {
     if (len > 32) len = 32;
 
-    // Check TX FIFO status before writing.  If FIFO is full or MAX_RT flag
-    // is set, flush and clear to prevent silent packet drops.
-    uint8_t status = readRegister(NRF_REG_STATUS);
-    if (status & NRF_MASK_MAX_RT) {
-        // Max retransmits reached — clear flag and flush stale FIFO
-        writeRegister(NRF_REG_STATUS, NRF_MASK_MAX_RT);
-        flushTx();
-    }
-    // If TX FIFO full (bit 0 of STATUS), flush to make room
-    if (status & 0x01) {
-        flushTx();
-        writeRegister(NRF_REG_STATUS, NRF_MASK_TX_DS | NRF_MASK_MAX_RT);
-    }
-
-    // Write TX payload
+    // Write TX payload directly — no FIFO/status checks here.
+    // The jammer task manages flushTx() + status clear before each
+    // burst cycle, so adding extra SPI reads here just wastes airtime.
     beginTransaction();
     spiTransfer(NRF_CMD_W_TX_PAYLOAD);
     const uint8_t* p = static_cast<const uint8_t*>(buf);
@@ -412,6 +400,17 @@ void NrfModule::writeFast(const void* buf, uint8_t len) {
     ceHigh();
     delayMicroseconds(15);
     ceLow();
+}
+
+void NrfModule::writePayload(const void* buf, uint8_t len) {
+    if (len > 32) len = 32;
+    beginTransaction();
+    spiTransfer(NRF_CMD_W_TX_PAYLOAD);
+    const uint8_t* p = static_cast<const uint8_t*>(buf);
+    for (uint8_t i = 0; i < len; i++) {
+        spiTransfer(p[i]);
+    }
+    endTransaction();
 }
 
 void NrfModule::setPayloadSize(uint8_t size) {

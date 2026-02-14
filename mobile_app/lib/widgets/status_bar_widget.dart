@@ -131,6 +131,15 @@ class _StatusBarWidgetState extends State<StatusBarWidget> {
                           return ModuleStatusWidget(
                             cc1101Modules: bleProvider.cc1101Modules!,
                             deviceInfo: {'freeHeap': bleProvider.freeHeap ?? 0},
+                            nrfPresent: bleProvider.nrfPresent,
+                            nrfInitialized: bleProvider.nrfInitialized,
+                            nrfJammerRunning: bleProvider.nrfJammerRunning,
+                            nrfScanning: bleProvider.nrfScanning,
+                            nrfAttacking: bleProvider.nrfAttacking,
+                            nrfSpectrumRunning: bleProvider.nrfSpectrumRunning,
+                            sdMounted: bleProvider.sdMounted,
+                            sdTotalMB: bleProvider.sdTotalMB,
+                            sdFreeMB: bleProvider.sdFreeMB,
                           );
                         }
                         return const SizedBox.shrink();
@@ -202,17 +211,7 @@ class _StatusBarWidgetState extends State<StatusBarWidget> {
               
               const SizedBox(width: 6),
               
-              // 5. SD Card Status (always available when connected)
-              if (bleProvider.isConnected)
-                _StatusIcon(
-                  icon: Icons.sd_card,
-                  color: AppColors.primaryText,
-                  tooltip: AppLocalizations.of(context)!.sdCardReady,
-                ),
-              
-              const SizedBox(width: 6),
-              
-              // 6. Battery Status
+              // 5. Battery Status (SD card moved to Device Status panel)
               if (bleProvider.isConnected && bleProvider.hasBatteryInfo)
                 _BatteryStatusIcon(
                   percentage: bleProvider.batteryPercent,
