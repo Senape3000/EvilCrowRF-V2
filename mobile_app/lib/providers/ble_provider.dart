@@ -2800,18 +2800,6 @@ class BleProvider extends ChangeNotifier {
     }
   }
 
-  /// Create a directory on the device (SDCard or LittleFS).
-  Future<void> createDirectory(String path, {int pathType = 5}) async {
-    if (!isConnected || txCharacteristic == null) {
-      throw Exception('Not connected');
-    }
-    final command = FirmwareBinaryProtocol.createCreateDirectoryCommand(
-        path, pathType: pathType);
-    await sendBinaryCommand(command);
-    // Small delay to let firmware process
-    await Future.delayed(const Duration(milliseconds: 50));
-  }
-
   // Scanner state management methods
   void updateDetectedSignals(List<DetectedSignal> newSignals) {
     detectedSignals.clear();

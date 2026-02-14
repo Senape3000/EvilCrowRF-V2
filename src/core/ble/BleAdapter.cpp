@@ -257,9 +257,8 @@ void BleAdapter::handleSingleCommand(uint8_t *payload, size_t payloadLength) {
     // (though uploads should normally be chunked, we handle single packet case too)
     if (messageType == 0x0D) {
         // Treat as single chunk upload (chunkId=0, chunkNum=1, totalChunks=1)
-        if (handleUploadChunk(0, 1, 1, payload, payloadLength)) {
-            return; // Upload handled
-        }
+        handleUploadChunk(0, 1, 1, payload, payloadLength);
+        return; // Always return — don't fall through to CommandHandler on failure
     }
     
     uint8_t *commandPayload = &payload[1];
@@ -612,10 +611,14 @@ bool BleAdapter::handleUploadChunk(uint8_t chunkId, uint8_t chunkNum, uint8_t to
         // Extract path
         const char* path = reinterpret_cast<const char*>(payload + 3);
         
-        // Build full path — pathType 4 uses LittleFS root, 0-3 use SD /DATA/...
+        // Build full path — pathType 4 uses LittleFS root, 5 uses SD root, 0-3 use SD /DATA/...
         char fullPath[256];
         if (pathType == 4) {
             // LittleFS internal storage
+            fullPath[0] = '/';
+            fullPath[1] = '\0';
+        } else if (pathType == 5) {
+            // SD card root — no /DATA/ prefix
             fullPath[0] = '/';
             fullPath[1] = '\0';
         } else {
@@ -642,8 +645,27 @@ bool BleAdapter::handleUploadChunk(uint8_t chunkId, uint8_t chunkNum, uint8_t to
         
         ESP_LOGI(TAG, "Starting file upload: %s (pathType=%d)", fullPath, pathType);
         
-        // Open file for writing on the correct filesystem
+        // Ensure parent directories exist (recursive mkdir)
+        // SD/LittleFS mkdir() is NOT recursive — we must create each level
         fs::FS& fs = (pathType == 4) ? (fs::FS&)LittleFS : (fs::FS&)SD;
+        {
+            char dirBuf[256];
+            strncpy(dirBuf, fullPath, sizeof(dirBuf) - 1);
+            dirBuf[sizeof(dirBuf) - 1] = '\0';
+            for (size_t i = 1; i < strlen(dirBuf); i++) {
+                if (dirBuf[i] == '/') {
+                    char saved = dirBuf[i];
+                    dirBuf[i] = '\0';
+                    if (!fs.exists(dirBuf)) {
+                        fs.mkdir(dirBuf);
+                        ESP_LOGD(TAG, "Created parent dir: %s", dirBuf);
+                    }
+                    dirBuf[i] = saved;
+                }
+            }
+        }
+        
+        // Open file for writing on the correct filesystem
         File file = fs.open(fullPath, FILE_WRITE);
         if (!file) {
             ESP_LOGE(TAG, "Failed to open file for upload: %s", fullPath);

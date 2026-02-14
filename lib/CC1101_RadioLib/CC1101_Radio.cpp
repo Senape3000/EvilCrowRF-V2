@@ -469,7 +469,10 @@ void CC1101_Radio::setPA(int p)
 {
     int a = 0;  // Default to minimum power if frequency not in any known band
     pa[currentModule] = p;
-    float mhz = getFrequency();  // Read actual frequency from registers
+    // Use stored MHz value instead of getFrequency() which reads from registers
+    // and truncates due to integer division, causing band-edge frequencies
+    // (e.g., 300.00, 779.00 MHz) to fall outside the valid range → PA = 0
+    float mhz = MHz[currentModule];
 
 if (mhz >= 300 && mhz <= 348){
 if (pa[currentModule] <= -30){a = PA_TABLE_315[0];}
@@ -558,7 +561,9 @@ Calibrate();
 *OUTPUT       :none
 ****************************************************************/
 void CC1101_Radio::Calibrate(void){
-    float mhz = getFrequency();  // Read actual frequency from registers
+    // Use stored MHz value instead of getFrequency() which truncates
+    // at band edges due to register integer arithmetic
+    float mhz = MHz[currentModule];
 
 if (mhz >= 300 && mhz <= 348){
 SpiWriteReg(CC1101_FSCTRL0, (byte)map((long)(mhz * 100), 30000, 34800, clb1[0], clb1[1]));

@@ -1498,9 +1498,37 @@ void CC1101Worker::processJamming(int module) {
             config.isCooldown = false;
             config.startTimeMs = currentTime; // Reset timer for new cycle
             
-            // Resume transmission
+            // Resume transmission — MUST use setTxWithPreset() to re-apply the
+            // full preset (Ook650) including FREND0=0x11. Plain setTx() calls Init()
+            // which resets ALL registers to POR defaults; FREND0 reverts to 0x10.
+            // With ASK/OOK PA_TABLE {0x00, power, 0...}, FREND0[2:0]=0 selects
+            // PA_TABLE[0]=0x00 → ZERO RF output after cooldown.
             ModuleCc1101& m = moduleCC1101State[module];
-            m.setTx(config.frequency);
+            
+            const uint8_t* basePreset = subghz_device_cc1101_preset_ook_650khz_async_regs;
+            static uint8_t resumePresetBytes[44];
+            memcpy(resumePresetBytes, basePreset, 44);
+            m.setTxWithPreset(config.frequency, resumePresetBytes, 44);
+            delay(20);
+            
+            // Re-calibrate and re-apply power after preset
+            m.calibrate();
+            m.waitForCalibration(100);
+            
+            int powerDbm = -30;
+            if (config.power == 1) powerDbm = -20;
+            else if (config.power == 2) powerDbm = -15;
+            else if (config.power == 3) powerDbm = -10;
+            else if (config.power == 4) powerDbm = 0;
+            else if (config.power == 5) powerDbm = 5;
+            else if (config.power == 6) powerDbm = 7;
+            else if (config.power >= 7) powerDbm = 10;
+            m.setPA(powerDbm);
+            delay(10);
+            
+            // Force re-initialization of GDO0 pin drive on next processJamming() call
+            config.pinInitialized = false;
+            config.fifoInitialized = false;
         } else {
             // Still in cooldown - just exit
             return;

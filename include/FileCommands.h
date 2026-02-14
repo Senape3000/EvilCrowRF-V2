@@ -844,12 +844,37 @@ public:
         buildBasePath(pathType, baseDirBuffer);
         
         fs::FS& fs = getFS(pathType);
-        bool ok = fs.exists(baseDirBuffer.c_str()) || fs.mkdir(baseDirBuffer.c_str());
-        if (ok) {
-            // Create the subdirectory
-            if (!fs.exists(pathBuffer.c_str())) {
-                ok = fs.mkdir(pathBuffer.c_str());
+        // Create base directory if needed
+        if (baseDirBuffer.size() > 0) {
+            if (!fs.exists(baseDirBuffer.c_str())) {
+                fs.mkdir(baseDirBuffer.c_str());
             }
+        }
+        
+        // Recursive mkdir — create each path segment from root to leaf
+        // SD/LittleFS mkdir() is NOT recursive, so we walk each '/' level
+        const char* fullStr = pathBuffer.c_str();
+        size_t fullLen = strlen(fullStr);
+        bool ok = true;
+        {
+            char segment[256];
+            strncpy(segment, fullStr, sizeof(segment) - 1);
+            segment[sizeof(segment) - 1] = '\0';
+            for (size_t i = 1; i < fullLen; i++) {
+                if (segment[i] == '/') {
+                    segment[i] = '\0';
+                    if (!fs.exists(segment)) {
+                        if (!fs.mkdir(segment)) {
+                            ESP_LOGW("FileCommands", "mkdir failed for segment: %s", segment);
+                        }
+                    }
+                    segment[i] = '/';
+                }
+            }
+        }
+        // Create the final directory itself
+        if (!fs.exists(fullStr)) {
+            ok = fs.mkdir(fullStr);
         }
         
         sendBinaryFileActionResult(3, ok, ok ? 0 : 7, pathBuffer.c_str()); // 3=mkdir, error 7=mkdir failed

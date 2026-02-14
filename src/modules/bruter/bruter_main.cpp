@@ -120,6 +120,10 @@ bool BruterModule::setupCC1101() {
     cc1101.SetTx();
     pinMode(RF_TX, OUTPUT);
 
+    // Reset cached frequency so the first setFrequencyCorrected() call
+    // actually writes the FREQ registers and re-triggers PLL calibration
+    current_mhz = 0.0f;
+
     xSemaphoreGive(spiMutex);
     return true;
 }
@@ -133,7 +137,13 @@ void BruterModule::setFrequencyCorrected(float target_mhz) {
     SemaphoreHandle_t spiMutex = ModuleCc1101::getSpiSemaphore();
     xSemaphoreTake(spiMutex, portMAX_DELAY);
     cc1101.setModul(selectedModule);  // Ensure currentModule targets the selected module
-    cc1101.setMHZ(corrected_mhz);
+    // CC1101 datasheet: FREQ registers should be written in IDLE state.
+    // Auto-calibration (MCSM0=0x18) only occurs on IDLE→TX/RX transitions.
+    // Without going IDLE first, the PLL won't lock to the new frequency.
+    cc1101.setSidle();
+    cc1101.setMHZ(corrected_mhz);    // Writes FREQ regs + calls Calibrate()
+    cc1101.SetTx();                   // IDLE→TX triggers auto-calibration + PLL lock
+    delay(1);                         // Allow PLL to settle
     xSemaphoreGive(spiMutex);
     current_mhz = corrected_mhz;
 }
@@ -163,6 +173,20 @@ void BruterModule::attackTaskFunc(void* param) {
     // Resume sets resumeFromCode > 0 before task creation.
     if (bruter.resumeFromCode == 0) {
         BruterStateManager::clearState();
+    }
+
+    // *** CRITICAL: Re-initialize CC1101 for TX before EVERY attack ***
+    // Between boot and attack start, other modules (CC1101Worker detect/record/jam)
+    // may have reconfigured the CC1101 into RX or IDLE mode.
+    // setupCC1101() restores: PKT_FORMAT=3 (async serial), ASK/OOK modulation,
+    // PA power, SetTx() strobe, and pinMode(GDO0, OUTPUT).
+    if (!bruter.setupCC1101()) {
+        ESP_LOGE("Bruter", "Failed to re-initialize CC1101 for TX — aborting attack");
+        bruter.currentMenuId = 0;
+        bruter.attackRunning = false;
+        attackTaskHandle = nullptr;
+        vTaskDelete(NULL);
+        return;  // Never reached, but makes intent clear
     }
 
     bruter.executeMenu(choice);

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/ble_provider.dart';
 import '../providers/locale_provider.dart';
@@ -3156,6 +3157,8 @@ class _SubGhzCloneDialogState extends State<_SubGhzCloneDialog> {
   }
 
   Future<void> _startCloning() async {
+    // Keep screen awake during the entire cloning process
+    WakelockPlus.enable();
     try {
       // Phase 1 & 2: Download and extract
       setState(() {
@@ -3264,7 +3267,11 @@ class _SubGhzCloneDialogState extends State<_SubGhzCloneDialog> {
               : 'All $_totalFiles files uploaded successfully!';
         });
       }
+      // Release wakelock after successful completion
+      WakelockPlus.disable();
     } catch (e) {
+      // Release wakelock on error
+      WakelockPlus.disable();
       if (mounted) {
         setState(() {
           _isDone = true;

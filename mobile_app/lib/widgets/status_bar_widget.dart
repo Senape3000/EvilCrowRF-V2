@@ -708,7 +708,7 @@ class _CpuStatusIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = _tempColor();
-    final tempText = temperatureC == null ? '--.-°C' : '${temperatureC!.toStringAsFixed(1)}°C';
+    final tempText = temperatureC == null ? '--°C' : '${temperatureC!.toStringAsFixed(0)}°C';
     final c0 = core0Mhz ?? 0;
     final c1 = core1Mhz ?? c0;
 
