@@ -716,7 +716,7 @@ void setup()
 #endif
 
     // Notification sender on Core 0 (near BLE stack for lower latency)
-    xTaskCreatePinnedToCore(ClientsManager::processMessageQueue, "SendNotifications", 2560, NULL, 1, NULL, 0); // 2.5KB on Core 0
+    xTaskCreatePinnedToCore(ClientsManager::processMessageQueue, "SendNotifications", 4096, NULL, 1, NULL, 0); // 4KB on Core 0
     ESP_LOGD(TAG, "SendNotifications task created.");
     
     // Create time synchronization task (updates deviceTime every second)

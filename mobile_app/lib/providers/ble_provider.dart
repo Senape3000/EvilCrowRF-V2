@@ -3233,6 +3233,20 @@ class BleProvider extends ChangeNotifier {
     }
   }
 
+  /// Format SD card: recursively delete all contents and re-create defaults.
+  Future<bool> formatSDCard() async {
+    if (!isConnected || txCharacteristic == null) return false;
+    try {
+      final cmd = FirmwareBinaryProtocol.createFormatSDCommand();
+      await sendBinaryCommand(cmd);
+      _log('warning', 'Format SD command sent');
+      return true;
+    } catch (e) {
+      _log('error', 'Failed to send format SD: $e');
+      return false;
+    }
+  }
+
   /// Start a bruter attack with the given menu choice (1-33)
   Future<void> sendBruterCommand(int menuChoice) async {
     if (!isConnected || txCharacteristic == null) {
@@ -3252,6 +3266,35 @@ class BleProvider extends ChangeNotifier {
 
     _isBruterRunning = true;
     _bruterActiveProtocol = menuChoice;
+    notifyListeners();
+  }
+
+  /// Start a custom De Bruijn attack with per-protocol timing and frequency.
+  /// Uses firmware sub-command 0xFD to pass exact Te, ratio, bits, and
+  /// frequency instead of relying on hardcoded De Bruijn menus.
+  Future<void> sendCustomDeBruijnCommand({
+    required int bits,
+    required int te,
+    required int ratio,
+    required double frequencyMhz,
+  }) async {
+    if (!isConnected || txCharacteristic == null) {
+      _log('error', 'Cannot start custom De Bruijn: not connected');
+      throw Exception('Not connected');
+    }
+
+    _log('command', 'Starting custom De Bruijn: bits=$bits te=$te ratio=$ratio freq=$frequencyMhz');
+
+    final command = FirmwareBinaryProtocol.createCustomDeBruijnCommand(
+      bits: bits,
+      te: te,
+      ratio: ratio,
+      frequencyMhz: frequencyMhz,
+    );
+    await sendBinaryCommand(command);
+
+    _isBruterRunning = true;
+    _bruterActiveProtocol = 0xFD;
     notifyListeners();
   }
 

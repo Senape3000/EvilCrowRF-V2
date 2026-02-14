@@ -69,6 +69,7 @@ class FirmwareBinaryProtocol {
   static const int MSG_REBOOT = 0x15;
   static const int MSG_FACTORY_RESET = 0x16;
   static const int MSG_SET_DEVICE_NAME = 0x17;
+  static const int MSG_FORMAT_SD = 0x18;
 
   // Bruter command
   static const int MSG_BRUTER = 0x04;
@@ -820,6 +821,31 @@ class FirmwareBinaryProtocol {
     return _createEnhancedCommand(MSG_BRUTER, payload);
   }
 
+  /// Create custom De Bruijn command (sub-command 0xFD) with per-protocol params.
+  /// Format: [0xFD][bits:1][teLo:1][teHi:1][ratio:1][freq:4LE float] (9 bytes)
+  /// This sends the correct timing and frequency for any protocol, avoiding
+  /// hardcoded De Bruijn menus (35-39) which use fixed frequencies.
+  static Uint8List createCustomDeBruijnCommand({
+    required int bits,
+    required int te,
+    required int ratio,
+    required double frequencyMhz,
+  }) {
+    final payload = Uint8List(9);
+    payload[0] = 0xFD; // Sub-command: custom De Bruijn
+    payload[1] = bits & 0xFF;
+    payload[2] = te & 0xFF;        // Te low byte
+    payload[3] = (te >> 8) & 0xFF; // Te high byte
+    payload[4] = ratio & 0xFF;
+    // IEEE 754 float, little-endian
+    final freqBytes = ByteData(4)..setFloat32(0, frequencyMhz, Endian.little);
+    payload[5] = freqBytes.getUint8(0);
+    payload[6] = freqBytes.getUint8(1);
+    payload[7] = freqBytes.getUint8(2);
+    payload[8] = freqBytes.getUint8(3);
+    return _createEnhancedCommand(MSG_BRUTER, payload);
+  }
+
   // ═══════════════════════════════════════════════════════════
   //  NRF24 Command Factories (0x20-0x2E)
   // ═══════════════════════════════════════════════════════════
@@ -1145,5 +1171,13 @@ class FirmwareBinaryProtocol {
   static Uint8List createFactoryResetCommand() {
     final payload = Uint8List.fromList([0x46, 0x52]); // 'F', 'R'
     return _createEnhancedCommand(MSG_FACTORY_RESET, payload);
+  }
+
+  /// Format SD card (0x18)
+  /// Payload: [0x46][0x53] ('FS') as safety confirmation.
+  /// Recursively deletes all SD contents and re-creates default directories.
+  static Uint8List createFormatSDCommand() {
+    final payload = Uint8List.fromList([0x46, 0x53]); // 'F', 'S'
+    return _createEnhancedCommand(MSG_FORMAT_SD, payload);
   }
 }

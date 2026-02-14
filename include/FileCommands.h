@@ -34,6 +34,7 @@ public:
         handler.registerCommand(0x0F, handleMoveFile);
         handler.registerCommand(0x10, handleSaveToSignalsWithName);
         handler.registerCommand(0x14, handleGetDirectoryTree); // Changed from 0x12 to avoid conflict with startJam
+        handler.registerCommand(0x18, handleFormatSDCard);
     }
     
 private:
@@ -747,6 +748,49 @@ public:
         return true;
     }
     
+    /**
+     * @brief Recursively remove a directory and all its contents.
+     *
+     * Walks the directory tree depth-first: deletes every file, recurses
+     * into sub-directories, then removes the now-empty directory itself.
+     *
+     * @param fs   Filesystem reference (SD or LittleFS).
+     * @param path Absolute path of the directory to remove.
+     * @return true if the directory and all children were deleted.
+     */
+    static bool removeDirectoryRecursive(fs::FS& fs, const char* path) {
+        File dir = fs.open(path);
+        if (!dir || !dir.isDirectory()) {
+            dir.close();
+            return false;
+        }
+
+        File child = dir.openNextFile();
+        while (child) {
+            const char* childPath = child.path();
+            bool isDir = child.isDirectory();
+            child.close();
+
+            if (isDir) {
+                if (!removeDirectoryRecursive(fs, childPath)) {
+                    dir.close();
+                    return false;
+                }
+            } else {
+                if (!fs.remove(childPath)) {
+                    ESP_LOGE("FileCmd", "Failed to remove file: %s", childPath);
+                    dir.close();
+                    return false;
+                }
+            }
+            child = dir.openNextFile();
+        }
+        dir.close();
+
+        // Directory should now be empty — remove it
+        return fs.rmdir(path);
+    }
+
     static bool handleRemoveFile(const uint8_t* data, size_t len) {
         if (len < 2) {
             sendBinaryFileActionResult(1, false, 1); // 1=delete, error 1=insufficient data
@@ -778,13 +822,72 @@ public:
         
         bool ok = false;
         if (isDirectory) {
-            ok = fs.rmdir(pathBuffer.c_str());
+            ok = removeDirectoryRecursive(fs, pathBuffer.c_str());
         } else {
             ok = fs.remove(pathBuffer.c_str());
         }
         
         sendBinaryFileActionResult(1, ok, ok ? 0 : 4, pathBuffer.c_str()); // error 4=delete failed
         return ok;
+    }
+
+    /**
+     * @brief Format SD card: recursively delete all contents and re-create
+     *        the default directory structure.
+     *
+     * Payload: [0x46][0x53] ('FS') as confirmation guard — prevents
+     * accidental invocation.
+     */
+    static bool handleFormatSDCard(const uint8_t* data, size_t len) {
+        // Require 2-byte confirmation payload 'FS' (Format SD)
+        if (len < 2 || data[0] != 0x46 || data[1] != 0x53) {
+            ESP_LOGW("FileCmd", "Format SD rejected: missing confirmation 'FS'");
+            sendBinaryFileActionResult(8, false, 1); // actionType 8 = format
+            return false;
+        }
+
+        ESP_LOGW("FileCmd", "FORMAT SD CARD — deleting all contents");
+
+        // Recursively delete every entry in SD root
+        File root = SD.open("/");
+        if (!root || !root.isDirectory()) {
+            ESP_LOGE("FileCmd", "Cannot open SD root");
+            sendBinaryFileActionResult(8, false, 2);
+            return false;
+        }
+
+        bool allOk = true;
+        File child = root.openNextFile();
+        while (child) {
+            const char* childPath = child.path();
+            bool isDir = child.isDirectory();
+            child.close();
+
+            if (isDir) {
+                if (!removeDirectoryRecursive(SD, childPath)) {
+                    ESP_LOGE("FileCmd", "Failed to remove dir: %s", childPath);
+                    allOk = false;
+                }
+            } else {
+                if (!SD.remove(childPath)) {
+                    ESP_LOGE("FileCmd", "Failed to remove file: %s", childPath);
+                    allOk = false;
+                }
+            }
+            child = root.openNextFile();
+        }
+        root.close();
+
+        // Re-create default directory structure
+        SD.mkdir("/DATA");
+        SD.mkdir("/DATA/RECORDS");
+        SD.mkdir("/DATA/SIGNALS");
+        SD.mkdir("/DATA/PRESETS");
+        SD.mkdir("/DATA/TEMP");
+
+        ESP_LOGI("FileCmd", "SD card format %s", allOk ? "complete" : "completed with errors");
+        sendBinaryFileActionResult(8, allOk, allOk ? 0 : 4);
+        return allOk;
     }
     
     static bool handleRenameFile(const uint8_t* data, size_t len) {

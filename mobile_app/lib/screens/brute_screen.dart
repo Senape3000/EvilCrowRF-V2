@@ -15,6 +15,10 @@ class BruterProtocol {
   final int bits;
   final String encoding;
   final IconData icon;
+  /// Timing element in microseconds (shortest pulse duration)
+  final int te;
+  /// Ratio of long pulse to short pulse (e.g. 3 means 1:3)
+  final int ratio;
 
   const BruterProtocol({
     required this.menuId,
@@ -24,6 +28,8 @@ class BruterProtocol {
     required this.bits,
     required this.encoding,
     required this.icon,
+    this.te = 300,
+    this.ratio = 3,
   });
 
   /// Whether this protocol uses De Bruijn mode (menu 35-40)
@@ -94,58 +100,58 @@ class BruterProtocol {
 /// All supported bruter protocols
 const List<BruterProtocol> bruterProtocols = [
   // EU Garage Remotes
-  BruterProtocol(menuId: 1, name: 'CAME', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage),
-  BruterProtocol(menuId: 2, name: 'Princeton', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'tristate', icon: Icons.garage),
-  BruterProtocol(menuId: 3, name: 'NiceFlo', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage),
-  BruterProtocol(menuId: 6, name: 'Holtek', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage),
-  BruterProtocol(menuId: 8, name: 'Ansonic', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage),
-  BruterProtocol(menuId: 11, name: 'FAAC', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage),
-  BruterProtocol(menuId: 12, name: 'BFT', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage),
-  BruterProtocol(menuId: 13, name: 'SMC5326', category: 'EU Garage', frequencyMhz: 433.42, bits: 12, encoding: 'tristate', icon: Icons.garage),
-  BruterProtocol(menuId: 14, name: 'Clemsa', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage),
-  BruterProtocol(menuId: 15, name: 'GateTX', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage),
-  BruterProtocol(menuId: 16, name: 'Phox', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage),
-  BruterProtocol(menuId: 17, name: 'Phoenix V2', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage),
-  BruterProtocol(menuId: 18, name: 'Prastel', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage),
-  BruterProtocol(menuId: 19, name: 'Doitrand', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage),
+  BruterProtocol(menuId: 1, name: 'CAME', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage, te: 320, ratio: 2),
+  BruterProtocol(menuId: 2, name: 'Princeton', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'tristate', icon: Icons.garage, te: 350, ratio: 3),
+  BruterProtocol(menuId: 3, name: 'NiceFlo', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage, te: 700, ratio: 2),
+  BruterProtocol(menuId: 6, name: 'Holtek', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage, te: 430, ratio: 2),
+  BruterProtocol(menuId: 8, name: 'Ansonic', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage, te: 555, ratio: 2),
+  BruterProtocol(menuId: 11, name: 'FAAC', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage, te: 400, ratio: 3),
+  BruterProtocol(menuId: 12, name: 'BFT', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage, te: 400, ratio: 2),
+  BruterProtocol(menuId: 13, name: 'SMC5326', category: 'EU Garage', frequencyMhz: 433.42, bits: 12, encoding: 'tristate', icon: Icons.garage, te: 320, ratio: 3),
+  BruterProtocol(menuId: 14, name: 'Clemsa', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage, te: 400, ratio: 2),
+  BruterProtocol(menuId: 15, name: 'GateTX', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage, te: 350, ratio: 2),
+  BruterProtocol(menuId: 16, name: 'Phox', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage, te: 400, ratio: 2),
+  BruterProtocol(menuId: 17, name: 'Phoenix V2', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage, te: 500, ratio: 2),
+  BruterProtocol(menuId: 18, name: 'Prastel', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage, te: 400, ratio: 2),
+  BruterProtocol(menuId: 19, name: 'Doitrand', category: 'EU Garage', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.garage, te: 400, ratio: 2),
 
   // US Garage Remotes
-  BruterProtocol(menuId: 4, name: 'Chamberlain', category: 'US Garage', frequencyMhz: 315.0, bits: 12, encoding: 'binary', icon: Icons.door_sliding),
-  BruterProtocol(menuId: 5, name: 'Linear', category: 'US Garage', frequencyMhz: 300.0, bits: 10, encoding: 'binary', icon: Icons.door_sliding),
-  BruterProtocol(menuId: 7, name: 'LiftMaster', category: 'US Garage', frequencyMhz: 315.0, bits: 12, encoding: 'binary', icon: Icons.door_sliding),
-  BruterProtocol(menuId: 23, name: 'Firefly', category: 'US Garage', frequencyMhz: 300.0, bits: 10, encoding: 'binary', icon: Icons.door_sliding),
-  BruterProtocol(menuId: 24, name: 'Linear MegaCode', category: 'US Garage', frequencyMhz: 318.0, bits: 24, encoding: 'binary', icon: Icons.door_sliding),
+  BruterProtocol(menuId: 4, name: 'Chamberlain', category: 'US Garage', frequencyMhz: 315.0, bits: 12, encoding: 'binary', icon: Icons.door_sliding, te: 430, ratio: 2),
+  BruterProtocol(menuId: 5, name: 'Linear', category: 'US Garage', frequencyMhz: 300.0, bits: 10, encoding: 'binary', icon: Icons.door_sliding, te: 500, ratio: 3),
+  BruterProtocol(menuId: 7, name: 'LiftMaster', category: 'US Garage', frequencyMhz: 315.0, bits: 12, encoding: 'binary', icon: Icons.door_sliding, te: 400, ratio: 2),
+  BruterProtocol(menuId: 23, name: 'Firefly', category: 'US Garage', frequencyMhz: 300.0, bits: 10, encoding: 'binary', icon: Icons.door_sliding, te: 400, ratio: 2),
+  BruterProtocol(menuId: 24, name: 'Linear MegaCode', category: 'US Garage', frequencyMhz: 318.0, bits: 24, encoding: 'binary', icon: Icons.door_sliding, te: 500, ratio: 2),
 
   // Home Automation
-  BruterProtocol(menuId: 20, name: 'Dooya', category: 'Home Auto', frequencyMhz: 433.92, bits: 24, encoding: 'binary', icon: Icons.blinds),
-  BruterProtocol(menuId: 21, name: 'Nero', category: 'Home Auto', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.blinds),
-  BruterProtocol(menuId: 22, name: 'Magellen', category: 'Home Auto', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.blinds),
+  BruterProtocol(menuId: 20, name: 'Dooya', category: 'Home Auto', frequencyMhz: 433.92, bits: 24, encoding: 'binary', icon: Icons.blinds, te: 350, ratio: 2),
+  BruterProtocol(menuId: 21, name: 'Nero', category: 'Home Auto', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.blinds, te: 450, ratio: 2),
+  BruterProtocol(menuId: 22, name: 'Magellen', category: 'Home Auto', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.blinds, te: 400, ratio: 2),
 
   // Alarm / Sensors
-  BruterProtocol(menuId: 9, name: 'EV1527', category: 'Alarm', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.security),
-  BruterProtocol(menuId: 10, name: 'Honeywell', category: 'Alarm', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.security),
-  BruterProtocol(menuId: 29, name: 'EV1527 24b', category: 'Alarm', frequencyMhz: 433.92, bits: 24, encoding: 'binary', icon: Icons.security),
+  BruterProtocol(menuId: 9, name: 'EV1527', category: 'Alarm', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.security, te: 320, ratio: 3),
+  BruterProtocol(menuId: 10, name: 'Honeywell', category: 'Alarm', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.security, te: 300, ratio: 2),
+  BruterProtocol(menuId: 29, name: 'EV1527 24b', category: 'Alarm', frequencyMhz: 433.92, bits: 24, encoding: 'binary', icon: Icons.security, te: 320, ratio: 3),
 
   // 868 MHz
-  BruterProtocol(menuId: 25, name: 'Hörmann', category: '868 MHz', frequencyMhz: 868.35, bits: 12, encoding: 'binary', icon: Icons.radio),
-  BruterProtocol(menuId: 26, name: 'Marantec', category: '868 MHz', frequencyMhz: 868.35, bits: 12, encoding: 'binary', icon: Icons.radio),
-  BruterProtocol(menuId: 27, name: 'Berner', category: '868 MHz', frequencyMhz: 868.35, bits: 12, encoding: 'binary', icon: Icons.radio),
+  BruterProtocol(menuId: 25, name: 'Hörmann', category: '868 MHz', frequencyMhz: 868.35, bits: 12, encoding: 'binary', icon: Icons.radio, te: 500, ratio: 2),
+  BruterProtocol(menuId: 26, name: 'Marantec', category: '868 MHz', frequencyMhz: 868.35, bits: 12, encoding: 'binary', icon: Icons.radio, te: 600, ratio: 2),
+  BruterProtocol(menuId: 27, name: 'Berner', category: '868 MHz', frequencyMhz: 868.35, bits: 12, encoding: 'binary', icon: Icons.radio, te: 400, ratio: 2),
 
   // Misc
-  BruterProtocol(menuId: 28, name: 'Intertechno V3', category: 'Misc', frequencyMhz: 433.92, bits: 32, encoding: 'binary', icon: Icons.power),
-  BruterProtocol(menuId: 30, name: 'StarLine', category: 'Misc', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.key),
-  BruterProtocol(menuId: 31, name: 'Tedsen', category: 'Misc', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.key),
-  BruterProtocol(menuId: 32, name: 'Airforce', category: 'Misc', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.key),
-  BruterProtocol(menuId: 33, name: 'Unilarm', category: 'Misc', frequencyMhz: 433.42, bits: 12, encoding: 'binary', icon: Icons.key),
-  BruterProtocol(menuId: 34, name: 'ELKA', category: 'Misc', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.key),
+  BruterProtocol(menuId: 28, name: 'Intertechno V3', category: 'Misc', frequencyMhz: 433.92, bits: 32, encoding: 'binary', icon: Icons.power, te: 250, ratio: 5),
+  BruterProtocol(menuId: 30, name: 'StarLine', category: 'Misc', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.key, te: 500, ratio: 2),
+  BruterProtocol(menuId: 31, name: 'Tedsen', category: 'Misc', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.key, te: 600, ratio: 2),
+  BruterProtocol(menuId: 32, name: 'Airforce', category: 'Misc', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.key, te: 350, ratio: 3),
+  BruterProtocol(menuId: 33, name: 'Unilarm', category: 'Misc', frequencyMhz: 433.42, bits: 12, encoding: 'binary', icon: Icons.key, te: 350, ratio: 3),
+  BruterProtocol(menuId: 34, name: 'ELKA', category: 'Misc', frequencyMhz: 433.92, bits: 12, encoding: 'binary', icon: Icons.key, te: 400, ratio: 2),
 
   // De Bruijn protocols (~90x faster for binary ≤16 bits)
-  BruterProtocol(menuId: 35, name: 'DeBruijn Generic 433', category: 'De Bruijn', frequencyMhz: 433.92, bits: 12, encoding: 'debruijn', icon: Icons.bolt),
-  BruterProtocol(menuId: 36, name: 'DeBruijn Generic 315', category: 'De Bruijn', frequencyMhz: 315.0, bits: 12, encoding: 'debruijn', icon: Icons.bolt),
-  BruterProtocol(menuId: 37, name: 'DeBruijn Holtek', category: 'De Bruijn', frequencyMhz: 433.92, bits: 12, encoding: 'debruijn', icon: Icons.bolt),
-  BruterProtocol(menuId: 38, name: 'DeBruijn Linear', category: 'De Bruijn', frequencyMhz: 300.0, bits: 10, encoding: 'debruijn', icon: Icons.bolt),
-  BruterProtocol(menuId: 39, name: 'DeBruijn EV1527', category: 'De Bruijn', frequencyMhz: 433.92, bits: 12, encoding: 'debruijn', icon: Icons.bolt),
-  BruterProtocol(menuId: 40, name: 'Universal Sweep', category: 'De Bruijn', frequencyMhz: 433.92, bits: 12, encoding: 'debruijn', icon: Icons.radar),
+  BruterProtocol(menuId: 35, name: 'DeBruijn Generic 433', category: 'De Bruijn', frequencyMhz: 433.92, bits: 12, encoding: 'debruijn', icon: Icons.bolt, te: 300, ratio: 3),
+  BruterProtocol(menuId: 36, name: 'DeBruijn Generic 315', category: 'De Bruijn', frequencyMhz: 315.0, bits: 12, encoding: 'debruijn', icon: Icons.bolt, te: 300, ratio: 3),
+  BruterProtocol(menuId: 37, name: 'DeBruijn Holtek', category: 'De Bruijn', frequencyMhz: 433.92, bits: 12, encoding: 'debruijn', icon: Icons.bolt, te: 430, ratio: 2),
+  BruterProtocol(menuId: 38, name: 'DeBruijn Linear', category: 'De Bruijn', frequencyMhz: 300.0, bits: 10, encoding: 'debruijn', icon: Icons.bolt, te: 500, ratio: 3),
+  BruterProtocol(menuId: 39, name: 'DeBruijn EV1527', category: 'De Bruijn', frequencyMhz: 433.92, bits: 12, encoding: 'debruijn', icon: Icons.bolt, te: 320, ratio: 3),
+  BruterProtocol(menuId: 40, name: 'Universal Sweep', category: 'De Bruijn', frequencyMhz: 433.92, bits: 12, encoding: 'debruijn', icon: Icons.radar, te: 300, ratio: 3),
 ];
 
 /// Get unique category list preserving order
@@ -169,7 +175,11 @@ class BruteScreen extends StatefulWidget {
 }
 
 /// Map from standard protocol menuId to its De Bruijn equivalent menuId.
-/// Only protocols with binary encoding and ≤16 bits have De Bruijn support.
+/// NOTE: This map is kept for reference only. In De Bruijn mode, the app now
+/// sends a custom 0xFD command with the protocol's own Te, ratio, bits, and
+/// frequency — ensuring correct per-protocol timing and frequency.
+/// The hardcoded De Bruijn menus (35-39) remain available as standalone entries.
+// ignore: unused_element
 const Map<int, int> _standardToDeBruijnMap = {
   // CAME, NiceFlo, FAAC, BFT, Clemsa, GateTX, Phox, PhoenixV2, Prastel,
   // Doitrand, Nero, Magellen, Ansonic, EV1527 12b, Honeywell, StarLine,
@@ -731,23 +741,17 @@ class _BruteScreenState extends State<BruteScreen> {
     final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
     final delayMs = settingsProvider.bruterDelayMs;
 
-    // Determine actual menu ID: if DeBruijn mode is on and protocol is compatible,
-    // route to the corresponding DeBruijn menu instead.
+    // Determine if we should use custom De Bruijn (per-protocol timing/freq)
+    // instead of hardcoded De Bruijn menus which have fixed frequencies.
+    bool useCustomDeBruijn = false;
     int actualMenuId = protocol.menuId;
     String modeSuffix = '';
     if (_useDeBruijnMode && !protocol.isDeBruijn && protocol.deBruijnCompatible) {
-      final dbMenuId = _standardToDeBruijnMap[protocol.menuId];
-      if (dbMenuId != null) {
-        actualMenuId = dbMenuId;
-        modeSuffix = ' (DeBruijn)';
-      }
+      useCustomDeBruijn = true;
+      modeSuffix = ' (DeBruijn)';
     }
 
-    // Use the correct protocol for time estimation
-    final displayProto = actualMenuId != protocol.menuId
-        ? bruterProtocols.firstWhere((p) => p.menuId == actualMenuId, orElse: () => protocol)
-        : protocol;
-    final estTime = displayProto.estimatedTimeWithDelay(delayMs);
+    final estTime = protocol.estimatedTimeWithDelay(delayMs);
 
     // Show confirmation dialog with protocol details
     final confirmed = await showDialog<bool>(
@@ -811,7 +815,17 @@ class _BruteScreenState extends State<BruteScreen> {
     if (confirmed != true || !context.mounted) return;
 
     try {
-      await bleProvider.sendBruterCommand(actualMenuId);
+      if (useCustomDeBruijn) {
+        // Send custom De Bruijn command with per-protocol timing and frequency
+        await bleProvider.sendCustomDeBruijnCommand(
+          bits: protocol.bits,
+          te: protocol.te,
+          ratio: protocol.ratio,
+          frequencyMhz: protocol.frequencyMhz,
+        );
+      } else {
+        await bleProvider.sendBruterCommand(actualMenuId);
+      }
 
       if (context.mounted) {
         final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);

@@ -633,14 +633,15 @@ bool BleAdapter::handleUploadChunk(uint8_t chunkId, uint8_t chunkNum, uint8_t to
         }
         
         if (pathLength > 0) {
-            if (pathType != 4) strcat(fullPath, "/");
+            // pathType 4 (LittleFS root) and 5 (SD root) already end with '/'
+            if (pathType != 4 && pathType != 5) strcat(fullPath, "/");
             if (path[0] == '/') {
                 strncat(fullPath, path + 1, pathLength - 1);
             } else {
                 strncat(fullPath, path, pathLength);
             }
         } else {
-            if (pathType != 4) strcat(fullPath, "/");
+            if (pathType != 4 && pathType != 5) strcat(fullPath, "/");
         }
         
         ESP_LOGI(TAG, "Starting file upload: %s (pathType=%d)", fullPath, pathType);

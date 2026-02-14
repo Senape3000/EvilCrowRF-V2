@@ -9,6 +9,7 @@ import '../services/cc1101/cc1101_calculator.dart';
 import '../widgets/record_screen_widgets.dart';
 import '../widgets/file_list_widget.dart';
 import '../widgets/transmit_file_dialog.dart';
+import '../widgets/waterfall_widget.dart';
 import '../theme/app_colors.dart';
 import 'file_viewer_screen.dart';
 
@@ -48,6 +49,10 @@ class _RecordScreenState extends State<RecordScreen> with TickerProviderStateMix
   
   // Files from current recording session
   final List<String> _currentSessionFiles = [];
+
+  // Waterfall signal activity data (per-module)
+  final List<WaterfallEntry> _waterfallEntries = [];
+  int _lastDetectedSignalCount = 0;
   
   // Flags for tracking changes
   final List<bool> _configsChanged = [];
@@ -95,6 +100,9 @@ class _RecordScreenState extends State<RecordScreen> with TickerProviderStateMix
     print('_onRecordedFilesChanged called');
     final runtimeFiles = _bleProvider?.recordedRuntimeFiles ?? [];
     print('Runtime files: $runtimeFiles');
+
+    // Feed new detected signals into the waterfall
+    _syncWaterfallFromProvider();
     
     // Add new files to local recorded files list
     for (final file in runtimeFiles) {
@@ -161,7 +169,40 @@ class _RecordScreenState extends State<RecordScreen> with TickerProviderStateMix
     setState(() {
       _currentSessionFiles.clear();
       _recordedFiles.clear();
+      _waterfallEntries.clear();
+      _lastDetectedSignalCount = 0;
     });
+  }
+
+  /// Synchronise waterfall entries from the BLE provider's detected signals.
+  void _syncWaterfallFromProvider() {
+    final signals = _bleProvider?.detectedSignals ?? [];
+    if (signals.length == _lastDetectedSignalCount) return;
+
+    // The list is sorted newest-first. Grab only new entries.
+    final newCount = signals.length - _lastDetectedSignalCount;
+    if (newCount <= 0) {
+      _lastDetectedSignalCount = signals.length;
+      return;
+    }
+
+    for (int i = newCount - 1; i >= 0; i--) {
+      final s = signals[i];
+      _waterfallEntries.add(WaterfallEntry(
+        timestamp: s.timestamp,
+        frequencyMhz: double.tryParse(s.frequency) ?? 0,
+        rssi: s.rssi,
+        module: s.module,
+      ));
+    }
+
+    // Cap at 500 entries
+    if (_waterfallEntries.length > 500) {
+      _waterfallEntries.removeRange(0, _waterfallEntries.length - 500);
+    }
+
+    _lastDetectedSignalCount = signals.length;
+    if (mounted) setState(() {});
   }
 
   // Create file object for local list
@@ -931,6 +972,49 @@ class _RecordScreenState extends State<RecordScreen> with TickerProviderStateMix
               ),
               
               const SizedBox(height: 12),
+
+              // Waterfall / spectrogram (only in Recording mode)
+              if (selectedAction == ModuleAction.recording) ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Signal Activity',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primaryText,
+                      ),
+                    ),
+                    if (_waterfallEntries.isNotEmpty)
+                      TextButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            _waterfallEntries.clear();
+                            _lastDetectedSignalCount = 0;
+                            _currentSessionFiles.clear();
+                            _recordedFiles.clear();
+                          });
+                        },
+                        icon: const Icon(Icons.clear_all, size: 16),
+                        label: Text(AppLocalizations.of(context)!.clearAll),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                WaterfallWidget(
+                  entries: _waterfallEntries,
+                  filterModule: moduleIndex,
+                  isLive: isRecording || bleProvider.isModuleFrequencySearching(moduleIndex),
+                  height: 150,
+                ),
+                const SizedBox(height: 12),
+              ],
               
               // File list only for Recording
               if (selectedAction == ModuleAction.recording)

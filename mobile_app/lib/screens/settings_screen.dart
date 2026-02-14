@@ -1862,6 +1862,59 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   const SizedBox(height: 24),
 
+                  // ── Format SD Card ──
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.warning.withValues(alpha: 0.06),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Row(
+                          children: [
+                            Icon(Icons.sd_card_alert, size: 18, color: AppColors.warning),
+                            SizedBox(width: 8),
+                            Text(
+                              'Format SD Card',
+                              style: TextStyle(
+                                color: AppColors.warning,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Delete all files and folders from the SD card and re-create the default directory structure. This cannot be undone.',
+                          style: TextStyle(color: AppColors.secondaryText, fontSize: 12),
+                        ),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: bleProvider.isConnected
+                                ? () => _showFormatSDDialog(context, bleProvider)
+                                : null,
+                            icon: const Icon(Icons.sd_card),
+                            label: const Text('Format SD Card'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.warning,
+                              foregroundColor: Colors.white,
+                              disabledBackgroundColor: AppColors.warning.withValues(alpha: 0.3),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
                   // ── Factory Reset ──
                   Container(
                     width: double.infinity,
@@ -2043,6 +2096,59 @@ class _SettingsScreenState extends State<SettingsScreen> {
               foregroundColor: Colors.white,
             ),
             child: const Text('Yes, Reset', style: TextStyle(fontSize: 16)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Show Format SD Card confirmation dialog with Yes/No.
+  void _showFormatSDDialog(BuildContext context, BleProvider bleProvider) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.secondaryBackground,
+        title: const Row(
+          children: [
+            Icon(Icons.sd_card_alert, color: AppColors.warning, size: 24),
+            SizedBox(width: 10),
+            Text('Format SD Card', style: TextStyle(color: AppColors.warning)),
+          ],
+        ),
+        content: const Text(
+          'Are you sure you want to delete ALL files from the SD card?\n\n'
+          'This will:\n'
+          '  - Delete all recordings, signals, and presets\n'
+          '  - Delete all uploaded .sub files\n'
+          '  - Re-create the default directory structure\n\n'
+          'This action cannot be undone.',
+          style: TextStyle(color: AppColors.primaryText, fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('No', style: TextStyle(color: AppColors.secondaryText, fontSize: 16)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(ctx).pop();
+              final success = await bleProvider.formatSDCard();
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(success
+                        ? 'SD card format started. This may take a moment.'
+                        : 'Failed to send format SD command.'),
+                    backgroundColor: success ? AppColors.warning : AppColors.error,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.warning,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Yes, Format', style: TextStyle(fontSize: 16)),
           ),
         ],
       ),
