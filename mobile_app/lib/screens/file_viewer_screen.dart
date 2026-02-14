@@ -276,18 +276,18 @@ class _FileViewerScreenState extends State<FileViewerScreen>
       }
     } catch (e) {
       print('_saveFileToDevice: Error during save: $e');
-      // On error save to Documents as fallback
+      // On error save to Downloads folder as fallback (user-accessible)
       try {
-        print('_saveFileToDevice: Trying fallback to Documents directory');
-        final directory = await getApplicationDocumentsDirectory();
+        print('_saveFileToDevice: Trying fallback to Downloads directory');
+        final downloadsDir = await _getDownloadsDirectory();
         final fileName = widget.fileItem.name;
-        final file = File('${directory.path}/$fileName');
+        final file = File('${downloadsDir.path}/$fileName');
         await file.writeAsString(content);
         
         // Verify file was actually saved
         if (await file.exists()) {
           final fileSize = await file.length();
-          print('_saveFileToDevice: File saved to Documents, size: $fileSize bytes');
+          print('_saveFileToDevice: File saved to Downloads, size: $fileSize bytes');
           
           if (mounted) {
             final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
@@ -307,6 +307,23 @@ class _FileViewerScreenState extends State<FileViewerScreen>
         }
       }
     }
+  }
+
+  /// Get the public Downloads directory on Android, or Documents as fallback.
+  Future<Directory> _getDownloadsDirectory() async {
+    if (Platform.isAndroid) {
+      // On Android, use the public Downloads directory
+      final downloadsPath = '/storage/emulated/0/Download';
+      final dir = Directory(downloadsPath);
+      if (await dir.exists()) {
+        return dir;
+      }
+    }
+    // Fallback: try path_provider's downloads directory
+    final dir = await getDownloadsDirectory();
+    if (dir != null) return dir;
+    // Ultimate fallback: app Documents directory
+    return await getApplicationDocumentsDirectory();
   }
 
   String _getFileExtension() {

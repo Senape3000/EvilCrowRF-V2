@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <String>
 #include "config.h"
+#include "../CC1101_driver/CC1101_Module.h"
 
 // Forward declarations for protocols
 namespace bruter {
@@ -99,6 +100,10 @@ public:
     void setGlobalRepeats(uint8_t reps) { globalRepeats = reps; }
     uint8_t getGlobalRepeats() const { return globalRepeats; }
 
+    /// Set which CC1101 module to use for brute force (0=MODULE_1, 1=MODULE_2)
+    void setModule(uint8_t mod);
+    uint8_t getModule() const { return selectedModule; }
+
     /// Get current attack menu ID (0 = idle)
     uint8_t getCurrentMenuId() const { return currentMenuId; }
 
@@ -127,12 +132,17 @@ private:
     uint8_t  customDbRatio = 3;
     float    customDbFreq = 433.92f;
 
-    const int RF_CS = BRUTER_RF_CS;
-    const int RF_GDO0 = BRUTER_RF_GDO0;
-    const int RF_TX = BRUTER_RF_TX;
-    const int RF_SCK = BRUTER_RF_SCK;
-    const int RF_MISO = BRUTER_RF_MISO;
-    const int RF_MOSI = BRUTER_RF_MOSI;
+    // RF module selection (0 = MODULE_1, 1 = MODULE_2)
+    uint8_t selectedModule = MODULE_2;
+    int RF_CS;
+    int RF_GDO0;
+    int RF_TX;
+    int RF_SCK  = BRUTER_RF_SCK;
+    int RF_MISO = BRUTER_RF_MISO;
+    int RF_MOSI = BRUTER_RF_MOSI;
+
+    /// Update pin assignments based on selectedModule.
+    void updatePinsForModule();
 
     void setFrequencyCorrected(float mhz);
     void sendPulse(int duration);

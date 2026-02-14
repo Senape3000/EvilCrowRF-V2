@@ -10,6 +10,7 @@ import '../providers/settings_provider.dart';
 import '../providers/firmware_protocol.dart';
 import '../widgets/transmit_file_dialog.dart';
 import '../services/update_service.dart';
+import '../services/flipper_subdb_service.dart';
 import '../theme/app_colors.dart';
 import 'debug_screen.dart';
 import 'files_screen.dart';
@@ -317,6 +318,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                       // ===== Firmware Update (Expandable, collapsed) =====
                       _buildFirmwareUpdateSection(context, bleProvider),
+
+                      const SizedBox(height: 12),
+
+                      // ===== Others (Expandable, collapsed) =====
+                      _buildOthersSection(context, bleProvider),
 
                       const SizedBox(height: 12),
 
@@ -826,6 +832,62 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   bleProvider.sendSettingsToDevice(
                       bruterPower: value.round());
                 },
+              ),
+
+              const SizedBox(height: 12),
+
+              // Bruter module selection
+              Row(
+                children: [
+                  const Icon(Icons.memory,
+                      size: 18, color: AppColors.secondaryText),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'TX Module: ${settingsProvider.bruterModule == 0 ? "Module 1" : "Module 2"}',
+                          style: const TextStyle(
+                            color: AppColors.primaryText,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Text(
+                          'CC1101 module used for brute force',
+                          style: const TextStyle(
+                              color: AppColors.secondaryText, fontSize: 11),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              SegmentedButton<int>(
+                segments: const [
+                  ButtonSegment<int>(
+                    value: 0,
+                    label: Text('Module 1', style: TextStyle(fontSize: 12)),
+                    icon: Icon(Icons.looks_one, size: 16),
+                  ),
+                  ButtonSegment<int>(
+                    value: 1,
+                    label: Text('Module 2', style: TextStyle(fontSize: 12)),
+                    icon: Icon(Icons.looks_two, size: 16),
+                  ),
+                ],
+                selected: {settingsProvider.bruterModule},
+                onSelectionChanged: (selected) {
+                  final mod = selected.first;
+                  settingsProvider.setBruterModule(mod);
+                  bleProvider.setBruterModule(mod);
+                },
+                style: ButtonStyle(
+                  visualDensity: VisualDensity.compact,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
               ),
             ],
           ),
@@ -1498,6 +1560,218 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  /// Build Others section (FlipperZero SubGHz DB cloning, etc.)
+  Widget _buildOthersSection(BuildContext context, BleProvider bleProvider) {
+    return Card(
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          leading: const Icon(Icons.miscellaneous_services, color: AppColors.primaryAccent),
+          title: const Text(
+            'Others',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: AppColors.primaryText,
+              fontSize: 16,
+            ),
+          ),
+          subtitle: Text(
+            'Additional tools and utilities',
+            style: TextStyle(
+              color: AppColors.secondaryText,
+              fontSize: 12,
+            ),
+          ),
+          initiallyExpanded: false,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // FlipperZero SubGHz DB Cloning
+                  _buildSubGhzDbCloneButton(context, bleProvider),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSubGhzDbCloneButton(BuildContext context, BleProvider bleProvider) {
+    return Card(
+      color: AppColors.secondaryBackground,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.cloud_download, size: 22, color: Colors.orange),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'FlipperZero SubGHz Database',
+                        style: TextStyle(
+                          color: AppColors.primaryText,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Download .sub files from Zero-Sploit repo and save to device SDCard in "SUB Files" folder',
+                        style: TextStyle(
+                          color: AppColors.secondaryText,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: bleProvider.isConnected
+                    ? () => _startSubGhzDbCloning(context, bleProvider)
+                    : null,
+                icon: const Icon(Icons.download, size: 18),
+                label: Text('Clone SubGHz DB to SDCard'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                  disabledBackgroundColor: Colors.grey.withOpacity(0.3),
+                ),
+              ),
+            ),
+            if (!bleProvider.isConnected)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  'Connect to device first',
+                  style: TextStyle(
+                    color: AppColors.error,
+                    fontSize: 11,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _startSubGhzDbCloning(BuildContext context, BleProvider bleProvider) async {
+    // Show confirmation dialog first
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.cloud_download, color: Colors.orange),
+            const SizedBox(width: 8),
+            Text('Clone SubGHz Database'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('This will:'),
+            const SizedBox(height: 8),
+            _cloneInfoRow('1.', 'Download FlipperZero SubGHz DB from GitHub'),
+            _cloneInfoRow('2.', 'Extract .sub files keeping folder structure'),
+            _cloneInfoRow('3.', 'Create "SUB Files" folder on device SDCard'),
+            _cloneInfoRow('4.', 'Upload all .sub files to the device'),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.warning.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: AppColors.warning.withOpacity(0.3)),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, color: AppColors.warning, size: 16),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'This may take several minutes. Files are uploaded one at a time via BLE to avoid conflicts.',
+                      style: TextStyle(color: AppColors.warning, fontSize: 12),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text('Cancel'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            icon: const Icon(Icons.download, size: 18),
+            label: Text('Start'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !context.mounted) return;
+
+    // Show progress dialog
+    _showSubGhzCloneProgress(context, bleProvider);
+  }
+
+  Widget _cloneInfoRow(String number, String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 20,
+            child: Text(number,
+                style: TextStyle(
+                    color: AppColors.primaryAccent,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13)),
+          ),
+          Expanded(
+            child: Text(text,
+                style: TextStyle(color: AppColors.primaryText, fontSize: 13)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSubGhzCloneProgress(BuildContext context, BleProvider bleProvider) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => _SubGhzCloneDialog(bleProvider: bleProvider),
     );
   }
 
@@ -2851,6 +3125,282 @@ class _AboutPopupState extends State<_AboutPopup>
           color: accent,
         ),
       ),
+    );
+  }
+}
+
+/// Dialog that handles the full SubGHz DB clone workflow with progress.
+class _SubGhzCloneDialog extends StatefulWidget {
+  final BleProvider bleProvider;
+  const _SubGhzCloneDialog({required this.bleProvider});
+
+  @override
+  State<_SubGhzCloneDialog> createState() => _SubGhzCloneDialogState();
+}
+
+class _SubGhzCloneDialogState extends State<_SubGhzCloneDialog> {
+  String _phase = 'init';
+  String _statusText = 'Preparing...';
+  double _progress = 0.0;
+  int _totalFiles = 0;
+  int _uploadedFiles = 0;
+  int _failedFiles = 0;
+  bool _isDone = false;
+  bool _hasError = false;
+  String _errorMessage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _startCloning();
+  }
+
+  Future<void> _startCloning() async {
+    try {
+      // Phase 1 & 2: Download and extract
+      setState(() {
+        _phase = 'download';
+        _statusText = 'Downloading SubGHz database from GitHub...';
+        _progress = 0.0;
+      });
+
+      final subFiles = await FlipperSubDbService.downloadAndExtract(
+        onProgress: (phase, detail, fraction) {
+          if (mounted) {
+            setState(() {
+              _phase = phase;
+              _statusText = detail;
+              _progress = fraction;
+            });
+          }
+        },
+      );
+
+      if (subFiles.isEmpty) {
+        setState(() {
+          _isDone = true;
+          _hasError = true;
+          _errorMessage = 'No .sub files found in the repository';
+        });
+        return;
+      }
+
+      _totalFiles = subFiles.length;
+
+      // Phase 3: Create base directory on SDCard
+      setState(() {
+        _phase = 'upload';
+        _statusText = 'Creating "SUB Files" folder on SDCard...';
+        _progress = 0.0;
+      });
+
+      await widget.bleProvider.createDirectory(
+          FlipperSubDbService.sdTargetFolder, pathType: 5);
+      await Future.delayed(const Duration(milliseconds: 200));
+
+      // Collect all unique subdirectories and create them
+      final subdirs = <String>{};
+      for (final file in subFiles) {
+        final parts = file.relativePath.split('/');
+        if (parts.length > 1) {
+          // Build cumulative subdir paths
+          for (int i = 1; i < parts.length; i++) {
+            final subdir = '${FlipperSubDbService.sdTargetFolder}/${parts.sublist(0, i).join('/')}';
+            subdirs.add(subdir);
+          }
+        }
+      }
+
+      // Create subdirectories (sorted so parents come first)
+      final sortedDirs = subdirs.toList()..sort();
+      for (final dir in sortedDirs) {
+        setState(() {
+          _statusText = 'Creating folder: $dir';
+        });
+        try {
+          await widget.bleProvider.createDirectory(dir, pathType: 5);
+          await Future.delayed(const Duration(milliseconds: 100));
+        } catch (e) {
+          // Directory might already exist, continue
+        }
+      }
+
+      // Phase 4: Upload files one at a time
+      for (int i = 0; i < subFiles.length; i++) {
+        final file = subFiles[i];
+        final targetPath =
+            '${FlipperSubDbService.sdTargetFolder}/${file.relativePath}';
+
+        if (mounted) {
+          setState(() {
+            _uploadedFiles = i;
+            _statusText = 'Uploading (${i + 1}/$_totalFiles): ${file.relativePath}';
+            _progress = i / _totalFiles;
+          });
+        }
+
+        try {
+          await widget.bleProvider.uploadFileFromBytes(
+            file.content,
+            targetPath,
+            pathType: 5,
+          );
+          // Pace uploads to avoid BLE congestion
+          await Future.delayed(const Duration(milliseconds: 150));
+        } catch (e) {
+          _failedFiles++;
+          // Log but continue with other files
+          print('Failed to upload ${file.relativePath}: $e');
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          _isDone = true;
+          _uploadedFiles = _totalFiles;
+          _progress = 1.0;
+          _statusText = _failedFiles > 0
+              ? 'Completed with $_failedFiles errors'
+              : 'All $_totalFiles files uploaded successfully!';
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isDone = true;
+          _hasError = true;
+          _errorMessage = e.toString();
+          _statusText = 'Error: $e';
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Row(
+        children: [
+          Icon(
+            _isDone
+                ? (_hasError ? Icons.error_outline : Icons.check_circle)
+                : Icons.cloud_download,
+            color: _isDone
+                ? (_hasError ? AppColors.error : AppColors.success)
+                : Colors.orange,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              _isDone
+                  ? (_hasError ? 'Clone Failed' : 'Clone Complete')
+                  : 'Cloning SubGHz Database',
+              style: const TextStyle(fontSize: 16),
+            ),
+          ),
+        ],
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Phase indicator
+          if (!_isDone) ...[
+            Row(
+              children: [
+                SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  _phase == 'download'
+                      ? 'Phase 1/3: Downloading'
+                      : _phase == 'extract'
+                          ? 'Phase 2/3: Extracting'
+                          : 'Phase 3/3: Uploading to SDCard',
+                  style: TextStyle(
+                    color: AppColors.primaryAccent,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+          ],
+
+          // Status text
+          Text(
+            _statusText,
+            style: TextStyle(
+              color: _hasError ? AppColors.error : AppColors.primaryText,
+              fontSize: 12,
+            ),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 12),
+
+          // Progress bar
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: _isDone ? 1.0 : (_progress > 0 ? _progress : null),
+              backgroundColor: Colors.grey.withOpacity(0.2),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                _hasError
+                    ? AppColors.error
+                    : _isDone
+                        ? AppColors.success
+                        : Colors.orange,
+              ),
+              minHeight: 8,
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          // File counter (during upload phase)
+          if (_phase == 'upload' || _isDone)
+            Text(
+              '$_uploadedFiles / $_totalFiles files'
+              '${_failedFiles > 0 ? ' ($_failedFiles failed)' : ''}',
+              style: TextStyle(
+                color: AppColors.secondaryText,
+                fontSize: 11,
+              ),
+            ),
+
+          // Error message
+          if (_hasError && _errorMessage.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.error.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                _errorMessage,
+                style: TextStyle(color: AppColors.error, fontSize: 11),
+                maxLines: 4,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ],
+      ),
+      actions: [
+        if (_isDone)
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('Close'),
+          ),
+      ],
     );
   }
 }

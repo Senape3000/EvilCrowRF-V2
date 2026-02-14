@@ -291,8 +291,9 @@ class UpdateService {
       }
 
       final totalBytes = streamedResponse.contentLength ?? 0;
-      final tempDir = await getTemporaryDirectory();
-      final file = File('${tempDir.path}/EvilCrowRF_update.apk');
+      // Save APK to public Downloads directory (user-accessible)
+      final downloadsDir = await _getDownloadsDirectory();
+      final file = File('${downloadsDir.path}/EvilCrowRF_update.apk');
       final sink = file.openWrite();
       int received = 0;
 
@@ -314,6 +315,19 @@ class UpdateService {
   }
 
   // ── Private helpers ──────────────────────────────────────────
+
+  /// Get the public Downloads directory on Android, or temp as fallback.
+  static Future<Directory> _getDownloadsDirectory() async {
+    if (Platform.isAndroid) {
+      final downloadsPath = '/storage/emulated/0/Download';
+      final dir = Directory(downloadsPath);
+      if (await dir.exists()) {
+        return dir;
+      }
+    }
+    // Fallback: temp directory
+    return await getTemporaryDirectory();
+  }
 
   /// URL to the structured changelog.json in the repository.
   static const String _changelogUrl =

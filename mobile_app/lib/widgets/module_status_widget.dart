@@ -480,24 +480,6 @@ class ModuleStatusWidget extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          if (sdMounted && sdTotalMB > 0) ...[
-            // Progress bar showing used space
-            SizedBox(
-              width: 60,
-              height: 6,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(3),
-                child: LinearProgressIndicator(
-                  value: sdTotalMB > 0 ? (sdTotalMB - sdFreeMB) / sdTotalMB : 0,
-                  backgroundColor: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    sdFreeMB < (sdTotalMB * 0.1) ? AppColors.error : AppColors.info,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-          ],
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(

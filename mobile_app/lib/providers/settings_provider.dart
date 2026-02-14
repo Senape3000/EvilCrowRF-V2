@@ -42,6 +42,7 @@ extension HwButtonActionLabel on HwButtonAction {
 class SettingsProvider with ChangeNotifier {
   bool _debugMode = false;
   int _bruterDelayMs = 10; // Default inter-frame delay in ms
+  int _bruterModule = 1;   // Default bruter module (0=Module 1, 1=Module 2)
   HwButtonAction _button1Action = HwButtonAction.none;
   HwButtonAction _button2Action = HwButtonAction.none;
   String? _button1ReplayPath;
@@ -56,6 +57,7 @@ class SettingsProvider with ChangeNotifier {
 
   bool get debugMode => _debugMode;
   int get bruterDelayMs => _bruterDelayMs;
+  int get bruterModule => _bruterModule;
   HwButtonAction get button1Action => _button1Action;
   HwButtonAction get button2Action => _button2Action;
   String? get button1ReplayPath => _button1ReplayPath;
@@ -75,6 +77,7 @@ class SettingsProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     _debugMode = prefs.getBool('debugMode') ?? false;
     _bruterDelayMs = prefs.getInt('bruterDelayMs') ?? 10;
+    _bruterModule = (prefs.getInt('bruterModule') ?? 1).clamp(0, 1);
     _button1Action = HwButtonAction.values[
       (prefs.getInt('hwButton1Action') ?? 0).clamp(0, HwButtonAction.values.length - 1)
     ];
@@ -104,6 +107,13 @@ class SettingsProvider with ChangeNotifier {
     _bruterDelayMs = value.clamp(1, 1000);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('bruterDelayMs', _bruterDelayMs);
+    notifyListeners();
+  }
+
+  Future<void> setBruterModule(int value) async {
+    _bruterModule = value.clamp(0, 1);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('bruterModule', _bruterModule);
     notifyListeners();
   }
 

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/file_item.dart';
@@ -2780,6 +2781,37 @@ class BleProvider extends ChangeNotifier {
     }
   }
 
+  /// Upload raw bytes as a file to the device SDCard.
+  /// Writes to a temp file first, then uploads via the standard pipeline.
+  Future<Map<String, dynamic>> uploadFileFromBytes(
+    Uint8List bytes,
+    String targetPath, {
+    int pathType = 5,
+    Function(double progress)? onProgress,
+  }) async {
+    final tempDir = await getTemporaryDirectory();
+    final tempFile = File('${tempDir.path}/_upload_tmp_${DateTime.now().millisecondsSinceEpoch}');
+    try {
+      await tempFile.writeAsBytes(bytes);
+      return await uploadFile(tempFile, targetPath,
+          pathType: pathType, onProgress: onProgress);
+    } finally {
+      try { await tempFile.delete(); } catch (_) {}
+    }
+  }
+
+  /// Create a directory on the device (SDCard or LittleFS).
+  Future<void> createDirectory(String path, {int pathType = 5}) async {
+    if (!isConnected || txCharacteristic == null) {
+      throw Exception('Not connected');
+    }
+    final command = FirmwareBinaryProtocol.createCreateDirectoryCommand(
+        path, pathType: pathType);
+    await sendBinaryCommand(command);
+    // Small delay to let firmware process
+    await Future.delayed(const Duration(milliseconds: 50));
+  }
+
   // Scanner state management methods
   void updateDetectedSignals(List<DetectedSignal> newSignals) {
     detectedSignals.clear();
@@ -3333,6 +3365,17 @@ class BleProvider extends ChangeNotifier {
     final command = FirmwareBinaryProtocol.createBruterSetDelayCommand(_bruterDelayMs);
     await sendBinaryCommand(command);
     notifyListeners();
+  }
+
+  /// Set the CC1101 module used for brute force (0=Module 1, 1=Module 2)
+  Future<void> setBruterModule(int module) async {
+    if (!isConnected || txCharacteristic == null) {
+      _log('info', 'Bruter module set locally to $module (will sync on connect)');
+      return;
+    }
+    _log('command', 'Setting bruter module to $module');
+    final command = FirmwareBinaryProtocol.createBruterSetModuleCommand(module);
+    await sendBinaryCommand(command);
   }
 
   /// Handle bruter progress update from firmware

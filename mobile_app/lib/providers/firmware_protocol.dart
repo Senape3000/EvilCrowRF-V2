@@ -812,6 +812,14 @@ class FirmwareBinaryProtocol {
     return _createEnhancedCommand(MSG_BRUTER, payload);
   }
 
+  /// Set target CC1101 module for brute force (0=Module 1, 1=Module 2)
+  static Uint8List createBruterSetModuleCommand(int module) {
+    Uint8List payload = Uint8List(2);
+    payload[0] = 0xF8; // Sub-command: set module
+    payload[1] = module.clamp(0, 1);
+    return _createEnhancedCommand(MSG_BRUTER, payload);
+  }
+
   // ═══════════════════════════════════════════════════════════
   //  NRF24 Command Factories (0x20-0x2E)
   // ═══════════════════════════════════════════════════════════

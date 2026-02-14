@@ -84,6 +84,30 @@ private:
             return true;
         }
 
+        // --- Set bruter RF module (sub-command 0xF8) ---
+        // Payload: [0xF8][module:1] where module=0 (Module 1) or 1 (Module 2)
+        if (menuChoice == 0xF8) {
+            if (len < 2) {
+                ESP_LOGE("BruterCommands", "Insufficient data for set-module command");
+                uint8_t errBuffer[2] = {MSG_COMMAND_ERROR, 1};
+                ClientsManager::getInstance().notifyAllBinary(NotificationType::SignalSendingError, errBuffer, 2);
+                return false;
+            }
+            uint8_t mod = data[1];
+            if (mod > 1) {
+                ESP_LOGE("BruterCommands", "Invalid module: %d (must be 0 or 1)", mod);
+                uint8_t errBuffer[2] = {MSG_COMMAND_ERROR, 3};
+                ClientsManager::getInstance().notifyAllBinary(NotificationType::SignalSendingError, errBuffer, 2);
+                return false;
+            }
+            BruterModule& bruter = getBruterModule();
+            bruter.setModule(mod);
+            ESP_LOGI("BruterCommands", "Bruter module set to %d", mod);
+            uint8_t successBuffer[1] = {MSG_COMMAND_SUCCESS};
+            ClientsManager::getInstance().notifyAllBinary(NotificationType::SignalSendingError, successBuffer, 1);
+            return true;
+        }
+
         // --- Set inter-frame delay (sub-command 0xFE) ---
         if (menuChoice == 0xFE) {
             if (len < 3) {

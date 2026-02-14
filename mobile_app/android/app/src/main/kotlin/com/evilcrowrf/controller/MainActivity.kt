@@ -1,4 +1,4 @@
-package com.example.evilcrow_rf2_controller
+package com.evilcrowrf.controller
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -398,13 +398,15 @@ GDO0_Set();
 *OUTPUT       :none
 ****************************************************************/
 void CC1101_Radio::setModul(byte modul){
+  // Update currentModule FIRST so GDO_Set/GDO0_Set configure the correct
+  // module's pins (they use currentModule internally).
+  currentModule = modul;
   if (gdo_set[modul]==1){
   GDO0_Set();
   }
   else if (gdo_set[modul]==2){
   GDO_Set();
   }
-  currentModule = modul;
 }
 
 void CC1101_Radio::selectModule(byte module)
