@@ -1,7 +1,7 @@
 name: evilcrow_rf2_controller
 description: EvilCrow RF — Mobile app for controlling RF devices via BLE
 publish_to: 'none'
-version: 1.0.7+21
+version: 1.1.0+25
 
 environment:
   sdk: '>=3.0.0 <4.0.0'

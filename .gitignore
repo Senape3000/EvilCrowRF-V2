@@ -11,3 +11,7 @@ personal_docs/
 *.7z
 to-do/
 docs/session
+SDR/build
+SDR/dist
+SDR/upx
+SDR/sdr_launcher.spec

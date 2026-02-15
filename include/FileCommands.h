@@ -910,7 +910,7 @@ public:
 
         ESP_LOGI("FileCmd", "Deleted %d items from SD root", deletedCount);
 
-        // Phase 3: re-create default directory structure with progress
+        // Phase 3: re-create default directory structure with progress and verification
         static const char* defaultDirs[] = {
             "/DATA",
             "/DATA/RECORDS",
@@ -918,13 +918,27 @@ public:
             "/DATA/PRESETS",
             "/DATA/TEMP"
         };
+        bool creationSuccess = true;
         for (int i = 0; i < 5; i++) {
             char progressMsg[280];
             snprintf(progressMsg, sizeof(progressMsg), "Creating: %s", defaultDirs[i]);
             sendBinaryFileActionResult(8, true, 0xFF, progressMsg);
             vTaskDelay(pdMS_TO_TICKS(20));
-            SD.mkdir(defaultDirs[i]);
-            ESP_LOGI("FileCmd", "Created directory: %s", defaultDirs[i]);
+            
+            // Create directory and verify
+            if (!SD.mkdir(defaultDirs[i])) {
+                // mkdir returns false if directory already exists or creation failed
+                // Check if it exists to distinguish between these cases
+                if (!SD.exists(defaultDirs[i])) {
+                    ESP_LOGE("FileCmd", "Failed to create directory: %s", defaultDirs[i]);
+                    creationSuccess = false;
+                    allOk = false;
+                } else {
+                    ESP_LOGI("FileCmd", "Directory already exists: %s", defaultDirs[i]);
+                }
+            } else {
+                ESP_LOGI("FileCmd", "Created directory: %s", defaultDirs[i]);
+            }
         }
 
         ESP_LOGI("FileCmd", "SD card format %s", allOk ? "complete" : "completed with errors");

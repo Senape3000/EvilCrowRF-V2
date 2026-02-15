@@ -2164,6 +2164,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// and closes automatically when the firmware result arrives.
   void _showSDFormatProgressDialog(BuildContext context) {
     bool closed = false;
+    bool hasReceivedResponse = false;
+    
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -2171,7 +2173,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         canPop: false,
         child: Consumer<BleProvider>(
           builder: (context, ble, _) {
-            if (!ble.isFormattingSD && !closed) {
+            // Mark that we've started receiving progress updates
+            if (ble.isFormattingSD && ble.sdFormatProgress.isNotEmpty) {
+              hasReceivedResponse = true;
+            }
+            
+            // Only close if we've received at least one progress update and formatting is done
+            // This prevents premature closure if firmware responds instantly with error
+            if (!ble.isFormattingSD && !closed && hasReceivedResponse) {
               closed = true;
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (ctx.mounted) Navigator.of(ctx).pop();
@@ -2184,11 +2193,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       backgroundColor: ble.sdFormatSuccess
                           ? AppColors.success
                           : AppColors.error,
+                      duration: const Duration(seconds: 3),
                     ),
                   );
                 }
               });
             }
+            
+            // Show warning if formatting takes too long without progress
+            if (ble.isFormattingSD && !hasReceivedResponse) {
+              // Start a timeout to close dialog if no response after 10 seconds
+              Future.delayed(const Duration(seconds: 10), () {
+                if (ctx.mounted && !closed && !hasReceivedResponse) {
+                  closed = true;
+                  Navigator.of(ctx).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Format timeout: No response from device.'),
+                      backgroundColor: AppColors.error,
+                      duration: Duration(seconds: 4),
+                    ),
+                  );
+                }
+              });
+            }
+            
             return AlertDialog(
               backgroundColor: AppColors.secondaryBackground,
               title: const Row(
