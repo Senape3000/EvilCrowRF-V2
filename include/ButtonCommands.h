@@ -192,10 +192,36 @@ private:
                 break;
 
             case HwButtonAction::ToggleRecording:
-                // TODO: Implement recording toggle when recorder module
-                // exposes a static start/stop interface.
-                ESP_LOGI("ButtonCmd", "Toggle recording — not yet implemented");
-                DeviceControls::ledBlink(2, 100);
+                {
+                    int module = 0; // We gebruiken Module 0 voor 433MHz
+                    
+                    // Controleer de huidige status via de statische getState methode
+                    if (CC1101Worker::getState(module) == CC1101State::Recording) {
+                        CC1101Worker::stopRecord(module);
+                        ESP_LOGI("ButtonCmd", "Recording STOPPED via button on module %d", module);
+                        DeviceControls::ledBlink(1, 500); // 1 lange flits bij STOP
+                    } else {
+                        // Start recording met de exacte 'Ook650' parameters die we eerder hebben getest:
+                        // parameters: module, frequentie, modulatie (2=OOK), deviation, bandwidth, datarate, preset-naam
+                        bool success = CC1101Worker::startRecord(
+                            module, 
+                            433.92f, 
+                            MODULATION_ASK_OOK, 
+                            2.38f, 
+                            650.0f, 
+                            3.79f, 
+                            "Ook650"
+                        );
+                        
+                        if (success) {
+                            ESP_LOGI("ButtonCmd", "Recording STARTED via button on module %d (433.92MHz)", module);
+                            DeviceControls::ledBlink(3, 100); // 3 korte flitsen bij START
+                        } else {
+                            ESP_LOGE("ButtonCmd", "Failed to start recording via button!");
+                            DeviceControls::ledBlink(4, 50); // Snelle fout-flitsen
+                        }
+                    }
+                }
                 break;
 
             case HwButtonAction::ReplayLast:
