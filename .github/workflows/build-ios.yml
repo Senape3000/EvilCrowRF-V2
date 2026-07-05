@@ -1,0 +1,53 @@
+name: Build iOS IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'mobile_app/**'
+      - '.github/workflows/build-ios.yml'
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Generate missing iOS project files
+        working-directory: mobile_app
+        run: flutter create --platforms=ios .
+
+      - name: Apply iOS permissions from template
+        run: |
+          git checkout HEAD -- mobile_app/ios/Runner/Info.plist
+          echo "--- Info.plist permissions ---"
+          /usr/libexec/PlistBuddy -c "Print" mobile_app/ios/Runner/Info.plist | grep -E "Bluetooth|Location|Background|QueriesSchemes"
+
+      - name: Get Flutter packages
+        working-directory: mobile_app
+        run: flutter pub get
+
+      - name: Build unsigned iOS app
+        working-directory: mobile_app
+        run: flutter build ios --release --no-codesign
+
+      - name: Package IPA
+        working-directory: mobile_app
+        run: |
+          mkdir -p build/ios/ipa
+          cd build/ios/iphoneos
+          mkdir Payload
+          cp -R Runner.app Payload/
+          zip -r ../ipa/EvilCrowRF.ipa Payload
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: EvilCrowRF-iOS
+          path: mobile_app/build/ios/ipa/EvilCrowRF.ipa
+          retention-days: 30

@@ -290,17 +290,14 @@ class _FileViewerScreenState extends State<FileViewerScreen>
   /// Get the public Downloads directory on Android, or Documents as fallback.
   Future<Directory> _getDownloadsDirectory() async {
     if (Platform.isAndroid) {
-      // On Android, use the public Downloads directory
       final downloadsPath = '/storage/emulated/0/Download';
       final dir = Directory(downloadsPath);
       if (await dir.exists()) {
         return dir;
       }
+      final dlDir = await getDownloadsDirectory();
+      if (dlDir != null) return dlDir;
     }
-    // Fallback: try path_provider's downloads directory
-    final dir = await getDownloadsDirectory();
-    if (dir != null) return dir;
-    // Ultimate fallback: app Documents directory
     return await getApplicationDocumentsDirectory();
   }
 

@@ -93,15 +93,39 @@ pio run --target upload
 
 Build mobile app (Android):
 
-  
-
 ```bash
-
-todo
-
+cd mobile_app
+flutter pub get
+flutter build apk --release
+# APK at: build/app/outputs/flutter-apk/app-release.apk
 ```
 
-  
+Build mobile app (iOS):
+
+```bash
+# Requires: macOS, Xcode (App Store), Flutter SDK
+cd mobile_app
+flutter create --platforms=ios .  # first time only — generates xcodeproj
+flutter pub get
+cd ios && pod install && cd ..
+flutter build ios --release --no-codesign
+```
+
+Or build via **GitHub Actions** (no local Xcode needed):
+- Go to Actions → "Build iOS IPA" → Run workflow
+- Download unsigned IPA from artifacts, sign with your own certificate
+
+iOS permissions (pre-configured in `mobile_app/ios/Runner/Info.plist`):
+
+| Key | Purpose |
+|---|---|
+| `NSBluetoothAlwaysUsageDescription` | BLE scanning & connection |
+| `NSBluetoothPeripheralUsageDescription` | Legacy BLE (iOS 12) |
+| `NSLocationWhenInUseUsageDescription` | iOS requires location for BLE discovery |
+| `UIBackgroundModes: bluetooth-central` | Background BLE connection |
+| `LSApplicationQueriesSchemes` | External links (GitHub, donate) |
+
+> Note: USB/serial is handled by the ESP32 firmware. The mobile app communicates via BLE only. No USB permissions needed on either platform.
 
 Run SDR tools (example):
 
@@ -125,7 +149,7 @@ todo
 
 - Releases follow semantic versioning. Firmware and app releases are published to GitHub releases and referenced by the web flasher.
 
-- Typical assets: `evilcrow-v2-fw-vX.Y.Z.bin`, `evilcrow-v2-fw-vX.Y.Z.bin.md5`, `EvilCrowRF-vX.Y.Z.apk`.
+- Typical assets: `evilcrow-v2-fw-vX.Y.Z.bin`, `evilcrow-v2-fw-vX.Y.Z.bin.md5`, `EvilCrowRF-vX.Y.Z.apk`, `EvilCrowRF.ipa`.
 
 - OTA high-level protocol: device commands include OTA begin, chunked data transfer, end and reboot. The app verifies MD5 before the transfer.
 

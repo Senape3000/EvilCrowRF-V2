@@ -357,34 +357,35 @@ class BleProvider extends ChangeNotifier {
   }
 
   Future<void> requestPermissions() async {
-    // Basic Bluetooth permissions
-    if (await Permission.bluetooth.isDenied) {
-      await Permission.bluetooth.request();
+    if (Platform.isAndroid) {
+      if (await Permission.bluetooth.isDenied) {
+        await Permission.bluetooth.request();
+      }
+      if (await Permission.bluetoothScan.isDenied) {
+        await Permission.bluetoothScan.request();
+      }
+      if (await Permission.bluetoothConnect.isDenied) {
+        await Permission.bluetoothConnect.request();
+      }
+      if (await Permission.bluetoothAdvertise.isDenied) {
+        await Permission.bluetoothAdvertise.request();
+      }
     }
     
-    // Android 12+ specific permissions
-    if (await Permission.bluetoothScan.isDenied) {
-      await Permission.bluetoothScan.request();
-    }
-    
-    if (await Permission.bluetoothConnect.isDenied) {
-      await Permission.bluetoothConnect.request();
-    }
-    
-    if (await Permission.bluetoothAdvertise.isDenied) {
-      await Permission.bluetoothAdvertise.request();
-    }
-    
-    // Location permission (required for scanning)
     if (await Permission.location.isDenied) {
       await Permission.location.request();
     }
     
-    // Check if all permissions are granted
-    bool allGranted = await Permission.bluetooth.isGranted &&
-                      await Permission.bluetoothScan.isGranted &&
-                      await Permission.bluetoothConnect.isGranted &&
-                      await Permission.location.isGranted;
+    bool allGranted;
+    if (Platform.isAndroid) {
+      allGranted = await Permission.bluetooth.isGranted &&
+                   await Permission.bluetoothScan.isGranted &&
+                   await Permission.bluetoothConnect.isGranted &&
+                   await Permission.location.isGranted;
+    } else {
+      // iOS: bluetooth/bluetoothScan/bluetoothConnect don't exist as runtime permissions
+      allGranted = await Permission.location.isGranted;
+    }
     
     if (!allGranted) {
       statusMessage = 'Some permissions denied. Bluetooth may not work properly.';
@@ -452,9 +453,13 @@ class BleProvider extends ChangeNotifier {
   }
 
   Future<bool> _checkScanPermissions() async {
-    return await Permission.bluetooth.isGranted &&
-           await Permission.bluetoothScan.isGranted &&
-           await Permission.location.isGranted;
+    if (Platform.isAndroid) {
+      return await Permission.bluetooth.isGranted &&
+             await Permission.bluetoothScan.isGranted &&
+             await Permission.location.isGranted;
+    }
+    // iOS: only location is a runtime permission for BLE scanning
+    return await Permission.location.isGranted;
   }
   
   // Filter scan results to show only supported devices

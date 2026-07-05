@@ -35,102 +35,122 @@ class FlipperSubDbService {
     void Function(String phase, String detail, double fraction)? onProgress,
     Future<void> Function(List<int> zipBytes)? onZipDownloaded,
   }) async {
-    // --- Phase 1: Download ZIP ---
-    onProgress?.call('download', 'Connecting to GitHub...', 0.0);
+    const maxRetries = 3;
+    Exception? lastError;
 
-    final request = http.Request('GET', Uri.parse(_repoZipUrl));
-    final streamedResponse = await request.send().timeout(
-      const Duration(seconds: 30),
-    );
-
-    if (streamedResponse.statusCode != 200) {
-      throw Exception(
-          'Failed to download repository: HTTP ${streamedResponse.statusCode}');
-    }
-
-    final totalBytes = streamedResponse.contentLength ?? 0;
-    final List<int> zipBytes = [];
-    int received = 0;
-
-    await for (final chunk in streamedResponse.stream) {
-      zipBytes.addAll(chunk);
-      received += chunk.length;
-      if (totalBytes > 0) {
-        onProgress?.call(
-          'download',
-          '${(received / 1024 / 1024).toStringAsFixed(1)} MB downloaded',
-          received / totalBytes,
+    for (int attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        return await _doDownloadAndExtract(
+          onProgress: onProgress,
+          onZipDownloaded: onZipDownloaded,
+          attempt: attempt,
         );
+      } on Exception catch (e) {
+        lastError = e;
+        if (attempt < maxRetries) {
+          onProgress?.call(
+            'download',
+            'Connection lost — retrying (attempt ${attempt + 1}/$maxRetries)...',
+            0.0,
+          );
+          await Future.delayed(Duration(seconds: 2 * attempt));
+        }
       }
     }
 
-    onProgress?.call('download', 'Download complete', 1.0);
+    throw Exception(
+      'Failed to download after $maxRetries attempts: $lastError',
+    );
+  }
 
-    // Allow caller to cache the raw ZIP for later resume
-    await onZipDownloaded?.call(zipBytes);
+  static Future<List<SubFileEntry>> _doDownloadAndExtract({
+    void Function(String phase, String detail, double fraction)? onProgress,
+    Future<void> Function(List<int> zipBytes)? onZipDownloaded,
+    int attempt = 1,
+  }) async {
+    final client = http.Client();
+    try {
+      onProgress?.call('download', 'Connecting to GitHub...', 0.0);
 
-    // --- Phase 2: Extract .sub files ---
-    onProgress?.call('extract', 'Decompressing ZIP...', 0.0);
+      final request = http.Request('GET', Uri.parse(_repoZipUrl));
+      request.headers['User-Agent'] = 'EvilCrowRF-App';
+      request.headers['Accept'] = 'application/zip';
 
-    final archive = ZipDecoder().decodeBytes(zipBytes);
-    final subFiles = <SubFileEntry>[];
+      final streamedResponse = await client.send(request).timeout(
+        const Duration(seconds: 60),
+      );
 
-    // The ZIP contains a root folder like "FlipperZero-Subghz-DB-main/"
-    // followed by a "subghz/" subfolder. We strip both prefixes so that
-    // relative paths start directly at the category level (e.g.,
-    // "Adjustable_Beds/RIZE .../file.sub") and map onto "SUB Files/..." on SD.
-    String? rootPrefix;
-    // Second-level prefix to strip (e.g. "subghz/")
-    const String subghzFolder = 'subghz/';
+      if (streamedResponse.statusCode != 200) {
+        throw Exception(
+            'Failed to download repository: HTTP ${streamedResponse.statusCode}');
+      }
 
-    int processed = 0;
-    final total = archive.files.length;
+      final totalBytes = streamedResponse.contentLength ?? 0;
+      final List<int> zipBytes = [];
+      int received = 0;
 
-    for (final file in archive.files) {
-      processed++;
-      if (file.isFile) {
-        final name = file.name;
-
-        // Determine root prefix from first file
-        rootPrefix ??= _extractRootPrefix(name);
-
-        // Only include .sub files (skip README, LICENSE, etc.)
-        if (name.toLowerCase().endsWith('.sub')) {
-          String relativePath = name;
-          if (rootPrefix != null && relativePath.startsWith(rootPrefix)) {
-            relativePath = relativePath.substring(rootPrefix.length);
-          }
-          // Strip the "subghz/" second-level folder so paths go directly
-          // inside "SUB Files/" on the SD card.
-          if (relativePath.startsWith(subghzFolder)) {
-            relativePath = relativePath.substring(subghzFolder.length);
-          }
-          // Skip empty paths
-          if (relativePath.isNotEmpty) {
-            subFiles.add(SubFileEntry(
-              relativePath: relativePath,
-              content: Uint8List.fromList(file.content as List<int>),
-            ));
-          }
+      await for (final chunk in streamedResponse.stream) {
+        zipBytes.addAll(chunk);
+        received += chunk.length;
+        if (totalBytes > 0) {
+          onProgress?.call(
+            'download',
+            '${(received / 1024 / 1024).toStringAsFixed(1)} MB downloaded',
+            received / totalBytes,
+          );
         }
       }
 
-      if (total > 0) {
-        onProgress?.call(
-          'extract',
-          'Extracting files... (${subFiles.length} .sub files found)',
-          processed / total,
-        );
+      onProgress?.call('download', 'Download complete', 1.0);
+
+      await onZipDownloaded?.call(zipBytes);
+
+      onProgress?.call('extract', 'Decompressing ZIP...', 0.0);
+
+      final archive = ZipDecoder().decodeBytes(zipBytes);
+      final subFiles = <SubFileEntry>[];
+      String? rootPrefix;
+      const String subghzFolder = 'subghz/';
+
+      int processed = 0;
+      final total = archive.files.length;
+
+      for (final file in archive.files) {
+        processed++;
+        if (file.isFile) {
+          final name = file.name;
+          rootPrefix ??= _extractRootPrefix(name);
+          if (name.toLowerCase().endsWith('.sub')) {
+            String relativePath = name;
+            if (rootPrefix != null && relativePath.startsWith(rootPrefix)) {
+              relativePath = relativePath.substring(rootPrefix.length);
+            }
+            if (relativePath.startsWith(subghzFolder)) {
+              relativePath = relativePath.substring(subghzFolder.length);
+            }
+            if (relativePath.isNotEmpty) {
+              subFiles.add(SubFileEntry(
+                relativePath: relativePath,
+                content: Uint8List.fromList(file.content as List<int>),
+              ));
+            }
+          }
+        }
+        if (total > 0) {
+          onProgress?.call(
+            'extract',
+            'Extracting files... (${subFiles.length} .sub files found)',
+            processed / total,
+          );
+        }
       }
+
+      onProgress?.call('extract', '${subFiles.length} .sub files extracted', 1.0);
+
+      return subFiles;
+    } finally {
+      client.close();
     }
-
-    onProgress?.call(
-      'extract',
-      '${subFiles.length} .sub files extracted',
-      1.0,
-    );
-
-    return subFiles;
   }
 
   /// Extract the root folder prefix from a ZIP entry path.

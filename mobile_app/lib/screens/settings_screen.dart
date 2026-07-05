@@ -112,6 +112,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   /// Check for app updates on GitHub and show dialog
   Future<void> _checkAppUpdate(BuildContext context) async {
+    if (!Platform.isAndroid) {
+      // App update via APK download is Android-only.
+      // iOS updates are distributed through the App Store or sideloading.
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('App updates via GitHub are only available on Android.'),
+            backgroundColor: AppColors.warning,
+          ),
+        );
+      }
+      return;
+    }
     try {
       final info = await PackageInfo.fromPlatform();
       final currentVersion = info.version;
@@ -224,6 +237,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// Download APK and trigger install
   Future<void> _downloadAndInstallApk(BuildContext context, AppUpdate update) async {
     if (update.apkUrl == null) return;
+    if (!Platform.isAndroid) {
+      // iOS cannot install APK from app; APK install is Android-only
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.apkSavedPleaseInstall(update.version)),
+            duration: const Duration(seconds: 3)),
+      );
+      return;
+    }
     try {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Downloading APK...'), duration: Duration(seconds: 30)),

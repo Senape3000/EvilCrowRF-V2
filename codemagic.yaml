@@ -1,0 +1,36 @@
+workflows:
+  ios-unsigned-ipa:
+    name: iOS Unsigned IPA
+    environment:
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Generate missing iOS project files
+        script: |
+          cd mobile_app
+          flutter create --platforms=ios .
+      - name: Configure iOS permissions
+        script: |
+          git checkout HEAD -- mobile_app/ios/Runner/Info.plist
+          echo "--- Info.plist permissions ---"
+          /usr/libexec/PlistBuddy -c "Print" mobile_app/ios/Runner/Info.plist | grep -E "Bluetooth|Location|Background|QueriesSchemes"
+      - name: Get Flutter packages
+        script: |
+          cd mobile_app
+          flutter pub get
+      - name: Build unsigned iOS app
+        script: |
+          cd mobile_app
+          flutter build ios --release --no-codesign
+      - name: Package IPA
+        script: |
+          cd mobile_app
+          mkdir -p build/ios/ipa
+          cd build/ios/iphoneos
+          mkdir Payload
+          cp -R Runner.app Payload/
+          zip -r ../ipa/EvilCrowRF.ipa Payload
+          echo "--- IPA created ---"
+          ls -la ../ipa/
+    artifacts:
+      - mobile_app/build/ios/ipa/*.ipa
